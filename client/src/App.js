@@ -1,37 +1,36 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Chart } from 'react-chartjs-2';
+import { Router } from 'react-router-dom';
+import { ThemeProvider } from '@material-ui/styles';
+import { createBrowserHistory } from 'history';
+import validate from 'validate.js';
+import { chartjs } from './helpers';
+import theme from './theme';
+import 'react-perfect-scrollbar/dist/css/styles.css';
+import './assets/scss/index.scss';
+import validators from './common/validators';
+import Routes from './Routes';
 import './App.css';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { apiResponse: "" };
-  }
+const browserHistory = createBrowserHistory();
 
-  callAPI() {
-    fetch("http://localhost:9000/testAPI")
-      .then(res => res.text())
-      .then(res => this.setState({ apiResponse: res }));
-  }
+Chart.helpers.extend(Chart.elements.Rectangle.prototype, {
+  draw: chartjs.draw
+});
 
-  componentWillMount() {
-    this.callAPI();
-  }
+validate.validators = {
+  ...validate.validators,
+  ...validators
+};
 
+export default class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p> Edit <code>src/App.js</code> and save to reload.</p>
-          <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-            Learn React
-      </a>
-        </header>
-        <p className="App-intro">{this.state.apiResponse}</p>
-      </div>
-    )
+      <ThemeProvider theme={theme}>
+        <Router history={browserHistory}>
+          <Routes />
+        </Router>
+      </ThemeProvider>
+    );
   }
-}
-
-export default App;
+};
