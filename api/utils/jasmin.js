@@ -1,15 +1,24 @@
-const axios = require('axios');
+var axios = require('axios');
 const FormData = require('form-data');
 
 function getAcessToken() {
 
-    let bodyData = generateBodyData();
+    let bodyData = generateBodyDataToken();
 
-    sendRequest('post', 'https://identity.primaverabss.com/connect/token', bodyData).then((res) => {
-      console.log(res.data);
+    sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', bodyData).then((res) => {
+      axios.defaults.headers.common['Authorization'] = "Bearer " + res.data.access_token;
+      getStockTransferOrders();
     }).catch((err) => {
       console.log(err);
     });
+}
+
+function getStockTransferOrders() {
+  sendRequest('get', 'http://my.jasminsoftware.com/api/224814/224814-0001/materialsmanagement/stockTransferOrders').then((res) => {
+    console.log(res);
+  }).catch((err) => {
+    console.log(err);
+  });
 }
 
 function sendRequest(method, url, bodyData) {
@@ -17,11 +26,22 @@ function sendRequest(method, url, bodyData) {
       url: url,
       method: method,
       data: bodyData,
-      headers: {...bodyData.getHeaders()}
+      responseType: 'json',
+      headers: {...new FormData().getHeaders}
     });
 }
 
-function generateBodyData() {
+function sendTokenRequest(method, url, bodyData) {
+  return axios({
+    url: url,
+    method: method,
+    data: bodyData,
+    headers: {...bodyData.getHeaders()}
+  });
+
+}
+
+function generateBodyDataToken() {
     let bodyData = new FormData();
 
     bodyData.append("client_id","FEUP-SINF-V");
@@ -34,4 +54,4 @@ function generateBodyData() {
 
 
 
-module.exports = {getAcessToken};
+module.exports = {getAcessToken, sendRequest};
