@@ -10,6 +10,7 @@ const { pool } = require('./config')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var testAPIRouter = require("./routes/testAPI");
+var {getAcessToken} = require('./utils/jasmin')
 
 var app = express();
 
@@ -43,5 +44,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+getAcessToken();
 
 module.exports = app;
