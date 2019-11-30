@@ -46,8 +46,14 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-
-
 getAcessToken();
+
+setTimeout(function(){getStockTransferOrders()}, 2000);
+
+function getStockTransferOrders() {
+  sendRequest('get', 'http://my.jasminsoftware.com/api/224814/224814-0001/materialsmanagement/stockTransferOrders');
+}
+
+
 
 module.exports = app;
