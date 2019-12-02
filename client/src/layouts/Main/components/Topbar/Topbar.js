@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { AppBar, Toolbar, Hidden, IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
+import { Header } from './components';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -13,6 +14,9 @@ const useStyles = makeStyles(theme => ({
   },
   flexGrow: {
     flexGrow: 1
+  },
+  header: {
+    color: theme.palette.text.primary
   }
 }));
 
@@ -27,6 +31,7 @@ const Topbar = props => {
       className={clsx(classes.root, className)}
     >
       <Toolbar>
+        <Header title={props.title}/>
         <div className={classes.flexGrow} />
         <Hidden lgUp>
           <IconButton
