@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Main = props => {
-  const { children } = props;
+  const { children, title } = props;
 
   const classes = useStyles();
   const theme = useTheme();
@@ -52,7 +52,7 @@ const Main = props => {
         variant={isDesktop ? 'persistent' : 'temporary'}
       />
       <main className={classes.content}>
-      <Topbar onSidebarOpen={handleSidebarOpen} />
+      <Topbar onSidebarOpen={handleSidebarOpen} title={title}/>
 
         {children}
         <Footer />
@@ -62,7 +62,8 @@ const Main = props => {
 };
 
 Main.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
+  title: PropTypes.string,
 };
 
 export default Main;
