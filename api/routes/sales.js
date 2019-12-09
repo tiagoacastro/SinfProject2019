@@ -30,7 +30,7 @@ async function postSalesOrder(orders) {
         }
 
         try {
-            var data = await sendRequest('post', 'https://my.jasminsoftware.com/api/224814/224814-0001/sales/orders', 1, orderResource);
+            //var data = await sendRequest('post', 'https://my.jasminsoftware.com/api/224814/224814-0001/sales/orders', 1, orderResource);
          } catch(err) {
              console.log(err);
          }
