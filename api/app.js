@@ -12,6 +12,8 @@ var usersRouter = require('./routes/users');
 var testAPIRouter = require("./routes/testAPI");
 var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
+var { postSalesOrder } = require('./routes/sales');
+var { getPurchaseOrders } = require('./routes/sales');
 
 var app = express();
 
@@ -48,12 +50,8 @@ app.use(function (err, req, res, next) {
 
 getAcessToken();
 
-setTimeout(function(){getStockTransferOrders()}, 2000);
-
-function getStockTransferOrders() {
-  sendRequest('get', 'http://my.jasminsoftware.com/api/224814/224814-0001/materialsmanagement/stockTransferOrders');
-}
-
-
+setTimeout(function(){
+  getPurchaseOrders();
+}, 2000);
 
 module.exports = app;

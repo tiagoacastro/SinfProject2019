@@ -12,28 +12,27 @@ function getAcessToken() {
     console.log(err);
   });
 
-  sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', wineData).then((res) => {
-    global.wineToken = "Bearer " + res.data.access_token;
+  sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', wineData).then((res2) => {
+    global.wineToken = "Bearer " + res2.data.access_token;
   }).catch((err) => {
     console.log(err);
   });
 }
 
-function sendRequest(method, url, bodyData) {
+function sendRequest(method, url, company, bodyData) {
   var headers = { ...new FormData().getHeaders };
-  headers['Authorization'] = global.grapeToken;
-  axios({
+  if (company === 1) {
+    headers['Authorization'] = global.grapeToken;
+  } else if (company === 2) {
+    headers['Authorization'] = global.wineToken;
+  }
+ 
+  return axios({
     url: url,
     method: method,
     data: bodyData,
     responseType: 'json',
     headers: headers
-  }).then((res) => {
-    console.log(res);
-  }).catch((err) => {
-    if (err.response.status === '401') {
-      getAcessToken();
-    }
   });
 }
 
