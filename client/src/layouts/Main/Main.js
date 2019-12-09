@@ -52,8 +52,7 @@ const Main = props => {
         variant={isDesktop ? 'persistent' : 'temporary'}
       />
       <main className={classes.content}>
-      <Topbar onSidebarOpen={handleSidebarOpen} title={title}/>
-
+        <Topbar onSidebarOpen={handleSidebarOpen} title={title} />
         {children}
         <Footer />
       </main>
