@@ -7,7 +7,7 @@ const theme = createMuiTheme({
   palette,
   typography: {
     fontFamily: 'Poppins',
-    fontSize: 13,
+    fontSize: 11,
     fontColor: "#334D6E"
   },
   overrides,
