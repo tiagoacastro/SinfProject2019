@@ -5,7 +5,8 @@ import { RouteWithLayout } from './components';
 import { Main as MainLayout } from './layouts';
 
 import {
-  MasterData as MasterDataView
+  MasterData as MasterDataView,
+  ProcessLogs as LogsView
 } from './views';
 
 const Routes = () => {
@@ -22,6 +23,14 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/master-data"
+
+      />
+      <RouteWithLayout
+        component={LogsView}
+        title="Logs"
+        exact
+        layout={MainLayout}
+        path="/logs"
 
       />
     </Switch>
