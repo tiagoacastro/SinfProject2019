@@ -31,7 +31,8 @@ CREATE TABLE events (
 );
 
 CREATE TABLE processes_events (
-  id_process        INTEGER REFERENCES processes (id) ON UPDATE CASCADE ON DELETE CASCADE,
-  id_event          INTEGER REFERENCES events (id) ON UPDATE CASCADE ON DELETE SET NULL,
+  id_process    INTEGER REFERENCES processes (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_event      INTEGER REFERENCES events (id) ON UPDATE CASCADE ON DELETE SET NULL,
+  order         INTEGER NOT NULL,
   PRIMARY KEY (id_process, id_event)
 );
