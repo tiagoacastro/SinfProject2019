@@ -48,6 +48,44 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
+//---------------------------
+//---------functions---------
+//---------------------------
+
+async function testDB() {
+    const client = await pool.connect();
+
+    //example query insert
+    await client.query('INSERT INTO processes (name) VALUES ($1)', ['test'], (error, result) => {
+        if (error) {
+            return console.error('Error executing INSERT query', error.stack)
+        }
+        console.log('added')
+    });
+
+    //example query select
+    await client.query('SELECT id, name FROM processes', (error, result) => {
+        if (error) {
+            return console.error('Error executing SELECT query', error.stack)
+        }
+        console.log(result.rows)
+    });
+
+    //example query delete
+    await client.query('DELETE FROM processes', (error, result) => {
+        if (error) {
+            return console.error('Error executing DELETE query', error.stack)
+        }
+        console.log('deleted')
+    });
+}
+
+//---------------------------
+//------------code-----------
+//---------------------------
+
+testDB();
+
 /*
 getAcessToken();
 
@@ -55,9 +93,5 @@ setTimeout(function() {
     getPurchaseOrders();
 }, 2000);
 */
-
-app.listen(process.env.PORT || 3002, () => {
-    console.log(`Server listening`)
-})
 
 module.exports = app;

@@ -1,8 +1,8 @@
 DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS master_data;
+DROP TABLE IF EXISTS processes_events;
 DROP TABLE IF EXISTS processes;
 DROP TABLE IF EXISTS events;
-DROP TABLE IF EXISTS processes_events;
 
 CREATE TABLE companies (
   id            SERIAL PRIMARY KEY,
@@ -33,6 +33,6 @@ CREATE TABLE events (
 CREATE TABLE processes_events (
   id_process    INTEGER REFERENCES processes (id) ON UPDATE CASCADE ON DELETE CASCADE,
   id_event      INTEGER REFERENCES events (id) ON UPDATE CASCADE ON DELETE SET NULL,
-  order         INTEGER NOT NULL,
+  position      INTEGER NOT NULL,
   PRIMARY KEY (id_process, id_event)
 );
