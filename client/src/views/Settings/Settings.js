@@ -1,9 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
-import {
-  CompanySettings, Connection
-} from './components';
+import { CompanySettings, Connection } from './components';
+import { getCompaniesData } from './requests';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -13,6 +12,16 @@ const useStyles = makeStyles(theme => ({
 
 const MasterData = () => {
   const classes = useStyles();
+  const [companiesData, setCompaniesData] = React.useState();
+
+  React.useEffect(() => {
+    getCompaniesData()
+      .then((response) => {
+        setCompaniesData(response.data);
+      })
+      .catch((err) => {
+      });
+  }, []);
 
   return (
     <div className={classes.root}>

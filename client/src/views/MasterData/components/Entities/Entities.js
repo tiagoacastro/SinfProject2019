@@ -37,7 +37,7 @@ const Entities = props => {
     React.useEffect(() => {
         getClients()
             .then((response) => {
-                setEntetiesData(response.data.products);
+                setEntetiesData(response.data);
             })
             .catch((err) => { });
     }, []);
