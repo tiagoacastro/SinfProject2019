@@ -75,12 +75,10 @@ const Connection = props => {
       />
       <Divider />
       <CardContent>
-        <Typography>
-          <Box fontWeight="fontWeightRegular" m={1}>Grant Type: client_credentials</Box>
-          <Box fontWeight="fontWeightRegular" m={1}>Scope: Application</Box>
-        </Typography>
-      </CardContent>
-    </Card>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Grant Type: client_credentials</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Scope: Application</Typography></Box>
+      </CardContent >
+    </Card >
   );
 };
 

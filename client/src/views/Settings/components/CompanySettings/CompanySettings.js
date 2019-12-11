@@ -75,15 +75,13 @@ const CompanySettings = props => {
         title="Company Name"
       />
       <Divider />
-     
+
       <CardContent>
-        <Typography>
-        <Box fontWeight="fontWeightRegular" m={1}>Company Name: Duriola </Box>
-        <Box fontWeight="fontWeightRegular" m={1}>Client ID: Duriola</Box>
-        <Box fontWeight="fontWeightRegular" m={1}>Client Secret: Duriola </Box>
-        </Typography>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Company Name: Duriola</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Client ID: Duriola</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Client Secret: Duriola</Typography></Box>
       </CardContent>
-    </Card>
+    </Card >
   );
 };
 
