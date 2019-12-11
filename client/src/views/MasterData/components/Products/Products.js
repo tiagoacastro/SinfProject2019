@@ -1,47 +1,49 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { Dialog, DialogContent, DialogActions, DialogTitle } from '@material-ui/core';
+import { Dialog, DialogContent, DialogActions, DialogTitle, Typography } from '@material-ui/core';
 import { Grid, Divider, Box, Button, TextField, Chip } from '@material-ui/core';
 import { getProcesses } from './requests'
+import { MapDialog } from '../../components';
 
 const Products = props => {
 
     const [processData, setProcessData] = React.useState();
     const [state, setState] = React.useState({
-        dialogOpen: false,
+        detailsDialogOpen: false,
+        addDialogOpen: false,
         selectedRow: [{}],
+        //later on will be processData
+        data: [
+            { id: '48309832', name: 'test', id1: '222', id2: '333' },
+            { id: '48309833', name: 'test2', id1: '122', id2: '313' },
+        ],
     });
 
     const columns = [
         {
             title: 'ID', field: 'id',
             render: (row) =>
-                <Button onClick={() => { setState({ ...state, selectedRow: row, dialogOpen: true }); }}>
+                <Button onClick={() => { setState({ ...state, selectedRow: row, detailsDialogOpen: true }); }}>
                     {`#${row.id}`}
                 </Button >
         },
-        { title: 'Name', field: 'name' },
-        {
-            title: 'Type', field: 'type', lookup: { 1: 'Product', 2: 'Service' },
-            render: (row) => <Chip variant="outlined" size="small"
-                color={row.type === 1 ? "primary" : "secondary"} label={row.type === 1 ? "Product" : "Service"} />
-        }
+        { title: 'Name', field: 'name' }
     ];
 
-    //later on will be processData
-    const exampleData = [
-        { id: '48309832', name: 'test', type: 1, id1: '222', id2: '333' },
-        { id: '48309833', name: 'test2', type: 2, id1: '122', id2: '313' },
-    ];
-
-    const handleClose = () => {
+    const handleDetailsClose = () => {
         const selectedRow = state.selectedRow
-        setState({ ...state, selectedRow: selectedRow, dialogOpen: false });
+        setState({ ...state, selectedRow: selectedRow, detailsDialogOpen: false });
     };
 
-    const handleOpen = () => {
-        const selectedRow = state.selectedRow
-        setState({ ...state, selectedRow: selectedRow, dialogOpen: false });
+    const handleAddClose = () => {
+        setState({ ...state, addDialogOpen: false });
+    };
+
+    const handleAddSave = (idProductA, idProductB) => {
+        //save ids in database and get universal id
+        const data = state.data;
+        data.push({ id: '1', name: 'test2', id1: '122', id2: '313' })
+        setState({ ...state, data, addDialogOpen: false });
     };
 
     React.useEffect(() => {
@@ -57,13 +59,23 @@ const Products = props => {
             <MaterialTable
                 title="Products"
                 columns={columns}
-                data={exampleData}
+                data={state.data}
+                actions={[
+                    {
+                        icon: 'add',
+                        tooltip: 'Add User',
+                        isFreeAction: true,
+                        onClick: (event) => {
+                            setState({ ...state, addDialogOpen: true });
+                        }
+                    }
+                ]}
             />
             <Dialog
                 fullWidth
-                open={state.dialogOpen}
+                open={state.detailsDialogOpen}
                 aria-labelledby="draggable-dialog-title"
-                onClose={handleClose}
+                onClose={handleDetailsClose}
             >
                 <DialogTitle id="draggable-dialog-title">Product Information</DialogTitle>
                 <Divider />
@@ -71,8 +83,8 @@ const Products = props => {
                     <Box mt={1} mb={3}>
                         <Box mb={2}><small>Details</small></Box>
                         <Box pl={2} py={1}>
-                            <b>Product Name: </b>
-                            {state.selectedRow.name}
+                            <Typography><b>Universal ID: </b>{state.selectedRow.id}</Typography>
+                            <Typography><b>Product Name: </b>{state.selectedRow.name}</Typography>
                         </Box>
                     </Box>
                     <Divider />
@@ -91,10 +103,12 @@ const Products = props => {
                     </Box>
                     <Divider />
                     <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={handleDetailsClose}>Cancel</Button>
                     </DialogActions >
                 </DialogContent>
             </Dialog >
+            <MapDialog open={state.addDialogOpen} close={handleAddClose} save={handleAddSave} />
+
         </div >
     );
 }
