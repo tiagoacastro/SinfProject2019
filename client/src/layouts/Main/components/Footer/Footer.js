@@ -25,10 +25,6 @@ const Footer = props => {
         Winerd
         . 2019
       </Typography>
-      <Typography variant="caption">
-        Created for SINF (Information Systems), a 4th year
-        subject of MIEIC at FEUP.
-      </Typography>
     </div>
   );
 };
