@@ -4,16 +4,6 @@ import { Dialog, DialogContent, DialogActions, DialogTitle } from '@material-ui/
 import { Grid, Divider, Box, Button, TextField, Chip } from '@material-ui/core';
 import { getProcesses } from './requests'
 
-const columns = [
-    { title: 'ID', field: 'id', render: (row) => `#${row.id}` },
-    { title: 'Name', field: 'name' },
-    {
-        title: 'Type', field: 'type', lookup: { 1: 'Product', 2: 'Service' },
-        render: (row) => <Chip variant="outlined" size="small"
-            color={row.type === 1 ? "primary" : "secondary"} label={row.type === 1 ? "Product" : "Service"} />
-    }
-];
-
 const Products = props => {
 
     const [processData, setProcessData] = React.useState();
@@ -22,6 +12,22 @@ const Products = props => {
         selectedRow: [{}],
     });
 
+    const columns = [
+        {
+            title: 'ID', field: 'id',
+            render: (row) =>
+                <Button onClick={() => { setState({ ...state, selectedRow: row, dialogOpen: true }); }}>
+                    {`#${row.id}`}
+                </Button >
+        },
+        { title: 'Name', field: 'name' },
+        {
+            title: 'Type', field: 'type', lookup: { 1: 'Product', 2: 'Service' },
+            render: (row) => <Chip variant="outlined" size="small"
+                color={row.type === 1 ? "primary" : "secondary"} label={row.type === 1 ? "Product" : "Service"} />
+        }
+    ];
+
     //later on will be processData
     const exampleData = [
         { id: '48309832', name: 'test', type: 1, id1: '222', id2: '333' },
@@ -29,6 +35,11 @@ const Products = props => {
     ];
 
     const handleClose = () => {
+        const selectedRow = state.selectedRow
+        setState({ ...state, selectedRow: selectedRow, dialogOpen: false });
+    };
+
+    const handleOpen = () => {
         const selectedRow = state.selectedRow
         setState({ ...state, selectedRow: selectedRow, dialogOpen: false });
     };
@@ -44,17 +55,9 @@ const Products = props => {
     return (
         <div>
             <MaterialTable
-                title={props.title}
+                title="Products"
                 columns={columns}
                 data={exampleData}
-                actions={[
-                    {
-                        icon: 'edit',
-                        onClick: (_, rowData) => {
-                            setState({ ...state, selectedRow: rowData, dialogOpen: true });
-                        }
-                    }
-                ]}
             />
             <Dialog
                 fullWidth

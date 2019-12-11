@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import { Products } from './components';
+import { Products, Entities } from './components';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,7 +24,12 @@ const MasterData = props => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Box mb={3}>
-            <Products title="Products" />
+            <Products />
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box mb={3}>
+            <Entities />
           </Box>
         </Grid>
       </Grid>
