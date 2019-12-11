@@ -2,40 +2,51 @@ import React from 'react';
 import MaterialTable from 'material-table';
 import { Dialog, DialogContent, DialogActions, DialogTitle } from '@material-ui/core';
 import { Grid, Divider, Box, Button, TextField, Chip } from '@material-ui/core';
+import { getProcesses } from './requests'
+
+const columns = [
+    { title: 'ID', field: 'id', render: (row) => `#${row.id}` },
+    { title: 'Name', field: 'name' },
+    {
+        title: 'Type', field: 'type', lookup: { 1: 'Product', 2: 'Service' },
+        render: (row) => <Chip variant="outlined" size="small"
+            color={row.type === 1 ? "primary" : "secondary"} label={row.type === 1 ? "Product" : "Service"} />
+    }
+];
 
 const Products = props => {
 
+    const [processData, setProcessData] = React.useState();
     const [state, setState] = React.useState({
-        columns: [
-            { title: 'ID', field: 'id', render: (row) => `#${row.id}` },
-            { title: 'Name', field: 'name' },
-            { title: 'Company', field: 'company', lookup: { 1: 'Company1', 2: 'Company2' } },
-            { title: 'Quantity', field: 'quantity' },
-            {
-                title: 'Type', field: 'type', lookup: { 1: 'Product', 2: 'Service' },
-                render: (row) => <Chip variant="outlined" size="small"
-                    color={row.type === 1 ? "primary" : "secondary"} label={row.type === 1 ? "Product" : "Service"} />
-            }
-        ],
-        data: [
-            { id: '48309832', name: 'test', company: 1, quantity: 1987, type: 1 },
-            { id: '48309833', name: 'test2', company: 2, quantity: 17, type: 2 },
-        ],
         dialogOpen: false,
         selectedRow: [{}],
     });
+
+    //later on will be processData
+    const exampleData = [
+        { id: '48309832', name: 'test', type: 1, id1: '222', id2: '333' },
+        { id: '48309833', name: 'test2', type: 2, id1: '122', id2: '313' },
+    ];
 
     const handleClose = () => {
         const selectedRow = state.selectedRow
         setState({ ...state, selectedRow: selectedRow, dialogOpen: false });
     };
 
+    React.useEffect(() => {
+        getProcesses()
+            .then((response) => {
+                setProcessData(response.data.products);
+            })
+            .catch((err) => { });
+    }, []);
+
     return (
         <div>
             <MaterialTable
                 title={props.title}
-                columns={state.columns}
-                data={state.data}
+                columns={columns}
+                data={exampleData}
                 actions={[
                     {
                         icon: 'edit',
@@ -60,10 +71,6 @@ const Products = props => {
                             <b>Product Name: </b>
                             {state.selectedRow.name}
                         </Box>
-                        <Box pl={2} py={1}>
-                            <b>Company: </b>
-                            {state.columns[2].lookup[state.selectedRow.company]}
-                        </Box>
                     </Box>
                     <Divider />
                     <Box mt={3} mb={6}>
@@ -71,10 +78,10 @@ const Products = props => {
                         <form noValidate autoComplete="off">
                             <Grid container justify="center">
                                 <Grid container justify="center" item xs={6} py={1}>
-                                    <TextField id="winerd-id" label="Winerd" defaultValue="cenas (?)" />
+                                    <TextField InputProps={{ readOnly: true, }} id="winerd-id" label="Winerd" defaultValue={state.selectedRow.id1} />
                                 </Grid>
                                 <Grid container justify="center" item xs={6} py={1}>
-                                    <TextField id="grapevine-id" label="GrapeVine" defaultValue="cenas (?)" />
+                                    <TextField InputProps={{ readOnly: true, }} id="grapevine-id" label="GrapeVine" defaultValue={state.selectedRow.id2} />
                                 </Grid>
                             </Grid>
                         </form>
@@ -82,9 +89,7 @@ const Products = props => {
                     <Divider />
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleClose} color="primary">Save</Button>
                     </DialogActions >
-
                 </DialogContent>
             </Dialog >
         </div >
