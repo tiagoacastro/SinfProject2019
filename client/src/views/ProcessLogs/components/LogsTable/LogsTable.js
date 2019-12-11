@@ -9,9 +9,9 @@ const LogsTable = props => {
         {
             title: 'ID', field: 'id', render: (row) => `#${row.id}`
         },
-        { title: 'Timestamp', field: 'timestamp', type: 'datetime' },
-        { title: 'Type', field: 'document' },
-        { title: 'Target', field: 'target' },
+        { title: 'Document', field: 'document' },
+        { title: 'Issuer', field: 'issuer' },
+        { title: 'Timestamp', field: 'timestamp', type: 'datetime' }
     ];
 
     return (

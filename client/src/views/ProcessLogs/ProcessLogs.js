@@ -16,9 +16,9 @@ const useStyles = makeStyles(theme => ({
 
 //later on will be logsData
 const exampledata = [
-  { id: '48309832', timestamp: '03/01/1029', document: 'Sales Order', target: 'Company 1' },
-  { id: '48309833', timestamp: '03/01/1029', document: 'Delivery Order', target: 'Company 1' },
-  { id: '48309832', timestamp: '03/01/1029', document: 'Purchase Order', target: 'Company 2' },
+  { id: '48309832', timestamp: '03/01/1029', document: 'Sales Order', issuer: 'Company 1' },
+  { id: '48309833', timestamp: '03/01/1029', document: 'Delivery Order', issuer: 'Company 1' },
+  { id: '48309832', timestamp: '03/01/1029', document: 'Purchase Order', issuer: 'Company 2' },
 ];
 
 const ProcessLogs = props => {
@@ -40,7 +40,13 @@ const ProcessLogs = props => {
     <div className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant="h6">ProcessTypeA #1</Typography>
+          <Typography variant='h6'>Process1Name</Typography>
+          <Box my={3}>
+            <LogsTable data={exampledata} />
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant='h6'>Process2Name</Typography>
           <Box my={3}>
             <LogsTable data={exampledata} />
           </Box>
