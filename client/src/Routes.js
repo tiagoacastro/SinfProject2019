@@ -2,10 +2,11 @@ import React from 'react';
 import { Switch, Redirect } from 'react-router-dom';
 
 import { RouteWithLayout } from './components';
-import { Main as MainLayout} from './layouts';
+import { Main as MainLayout } from './layouts';
 
 import {
-  MasterData as MasterDataView
+  MasterData as MasterDataView,
+  ProcessLogs as LogsView
 } from './views';
 
 const Routes = () => {
@@ -18,9 +19,19 @@ const Routes = () => {
       />
       <RouteWithLayout
         component={MasterDataView}
+        title="Master Data"
         exact
         layout={MainLayout}
         path="/master-data"
+
+      />
+      <RouteWithLayout
+        component={LogsView}
+        title="Logs"
+        exact
+        layout={MainLayout}
+        path="/logs"
+
       />
     </Switch>
   );

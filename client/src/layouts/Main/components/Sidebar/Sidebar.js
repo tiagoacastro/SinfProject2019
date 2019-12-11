@@ -44,17 +44,17 @@ const Sidebar = props => {
     {
       title: 'Master Data',
       href: '/master-data',
-      icon: <MasterDataIcon className={classes.icon}/>
+      icon: <MasterDataIcon className={classes.icon} />
     },
     {
       title: 'Logs',
       href: '/logs',
-      icon: <LogsIcon className={classes.icon}/>
+      icon: <LogsIcon className={classes.icon} />
     },
     {
       title: 'Process',
-      href: '/process',
-      icon: <ProgressIcon className={classes.icon}/>
+      href: '/processes',
+      icon: <ProgressIcon className={classes.icon} />
     }
   ];
 
@@ -62,10 +62,10 @@ const Sidebar = props => {
     {
       title: 'Settings',
       href: '/settings',
-      icon: <SettingsIcon className={classes.icon}/>
+      icon: <SettingsIcon className={classes.icon} />
     }
   ];
-  
+
 
   return (
     <Drawer
@@ -81,21 +81,21 @@ const Sidebar = props => {
       >
         <Grid
           container
-          justify = "center"
-          >
-            <img
-              alt="Logo"
-              src={"/logo.svg"}
-              width="30%"
-              className={classes.logo}
+          justify="center"
+        >
+          <img
+            alt="Logo"
+            src={"/logo.svg"}
+            width="30%"
+            className={classes.logo}
 
-            />
-          </Grid>
+          />
+        </Grid>
         <SidebarNav
           className={classes.content}
           pages={pages}
         />
-        <Divider/>
+        <Divider />
         <SidebarNav
           className={classes.content}
           pages={otherPages}

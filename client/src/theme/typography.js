@@ -4,21 +4,22 @@ export default {
   h1: {
     color: palette.text.primary,
     fontWeight: 500,
-    fontSize: '35px',
+    fontSize: '25px',
     letterSpacing: '-0.24px',
     lineHeight: '40px'
   },
   h2: {
     color: palette.text.primary,
     fontWeight: 500,
-    fontSize: '29px',
+    fontSize: '20px',
     letterSpacing: '-0.24px',
     lineHeight: '32px'
   },
   h3: {
+    fontFamily: 'Poppins',
     color: palette.text.primary,
     fontWeight: 500,
-    fontSize: '20px',
+    fontSize: '18px',
     letterSpacing: '-0.06px',
     lineHeight: '28px'
   },
