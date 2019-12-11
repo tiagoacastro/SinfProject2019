@@ -36,6 +36,7 @@ const Routes = () => {
       />
       <RouteWithLayout
         component={SettingsView}
+        title="Intercompany Connection"
         exact
         layout={MainLayout}
         path="/settings"
