@@ -6,7 +6,8 @@ import { Main as MainLayout } from './layouts';
 
 import {
   MasterData as MasterDataView,
-  ProcessLogs as LogsView
+  ProcessLogs as LogsView,
+  Settings as SettingsView
 } from './views';
 
 const Routes = () => {
@@ -33,7 +34,15 @@ const Routes = () => {
         path="/logs"
 
       />
+      <RouteWithLayout
+        component={SettingsView}
+        exact
+        layout={MainLayout}
+        path="/settings"
+      />
     </Switch>
+
+    
   );
 };
 
