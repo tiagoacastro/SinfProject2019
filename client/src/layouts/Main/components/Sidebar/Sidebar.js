@@ -53,7 +53,7 @@ const Sidebar = props => {
     },
     {
       title: 'Process',
-      href: '/processes',
+      href: '/process',
       icon: <ProgressIcon className={classes.icon} />
     }
   ];
