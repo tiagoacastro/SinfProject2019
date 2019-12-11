@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS master_data;
 DROP TABLE IF EXISTS processes_events;
 DROP TABLE IF EXISTS processes;
 DROP TABLE IF EXISTS events;
+DROP TYPE IF EXISTS categories;
 
 CREATE TABLE companies (
   id            SERIAL PRIMARY KEY,
@@ -13,11 +14,14 @@ CREATE TABLE companies (
   organization  TEXT NOT NULL UNIQUE
 );
 
+CREATE TYPE categories AS ENUM('Product', 'Document', 'Entity');
+
 CREATE TABLE master_data (
   id            SERIAL PRIMARY KEY,
   name          TEXT NOT NULL UNIQUE,
   reference_1   TEXT NOT NULL UNIQUE,
-  reference_2   TEXT NOT NULL UNIQUE
+  reference_2   TEXT NOT NULL UNIQUE,
+  category      categories NOT NULL
 );
 
 CREATE TABLE processes (
