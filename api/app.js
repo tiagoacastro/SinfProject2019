@@ -105,7 +105,8 @@ testDB();
 initialize();
 
 setTimeout(function() {
-    getPurchaseOrders(companies[0], companies[1]);
+    //getPurchaseOrders(companies[0], companies[1]);
+    getDeliveryOrders(companies[0], companies[1]);
 }, 2000);
 
 module.exports = app;
