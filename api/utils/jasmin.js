@@ -1,18 +1,18 @@
 var axios = require('axios');
 const FormData = require('form-data');
 
-function getAcessToken() {
+async function getAcessToken(grapeCompany, wineCompany) {
 
-  let grapeData = generateGrapeBody();
-  let wineData = generateWineBody();
+  let grapeData = generateGrapeBody(grapeCompany);
+  let wineData = generateWineBody(wineCompany);
 
-  sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', grapeData).then((res) => {
+  await sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', grapeData).then((res) => {
     global.grapeToken = "Bearer " + res.data.access_token;
   }).catch((err) => {
     console.log(err);
   });
 
-  sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', wineData).then((res2) => {
+  await sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', wineData).then((res2) => {
     global.wineToken = "Bearer " + res2.data.access_token;
   }).catch((err) => {
     console.log(err);
@@ -26,7 +26,7 @@ function sendRequest(method, url, company, bodyData) {
   } else if (company === 2) {
     headers['Authorization'] = global.wineToken;
   }
- 
+
   return axios({
     url: url,
     method: method,
@@ -46,22 +46,22 @@ function sendTokenRequest(method, url, bodyData) {
 
 }
 
-function generateGrapeBody() {
+function generateGrapeBody(grapeCompany) {
   let bodyData = new FormData();
 
-  bodyData.append("client_id", "FEUP-SINF-V");
-  bodyData.append("client_secret", "c9aad44c-b151-49bf-aa87-cd6163a5a8b9");
+  bodyData.append("client_id", grapeCompany.client_id);
+  bodyData.append("client_secret", grapeCompany.secret_id);
   bodyData.append("grant_type", "client_credentials");
   bodyData.append("scope", "application");
 
   return bodyData;
 }
 
-function generateWineBody() {
+function generateWineBody(wineCompany) {
   let bodyData = new FormData();
 
-  bodyData.append("client_id", "FEUP-SINF-V-2");
-  bodyData.append("client_secret", "291aeb16-f709-4954-96db-6ba7a8cb889b");
+  bodyData.append("client_id", wineCompany.client_id);
+  bodyData.append("client_secret", wineCompany.secret_id);
   bodyData.append("grant_type", "client_credentials");
   bodyData.append("scope", "application");
 

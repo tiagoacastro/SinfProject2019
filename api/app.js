@@ -81,6 +81,20 @@ async function testDB() {
     });
 }
 
+var companies;
+
+async function initialize() {
+    const client = await connect();
+
+    client.query('SELECT * FROM companies', (error, result) => {
+        if (error) {
+            console.error('Error executing SELECT query', error.stack)
+        }
+        companies = result.rows;
+        getAcessToken(companies[0], companies[1]);
+    });
+}
+
 
 //---------------------------
 //------------code-----------
@@ -88,10 +102,10 @@ async function testDB() {
 
 testDB();
 
-getAcessToken();
+initialize();
 
 setTimeout(function() {
-    getPurchaseOrders();
+    getPurchaseOrders(companies[0], companies[1]);
 }, 2000);
 
 module.exports = app;

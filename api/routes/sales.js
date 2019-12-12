@@ -11,7 +11,7 @@ router.get('/company/:companyID/sales', function(req, res, next) {
     res.send('respond with a resource');
 });
 
-async function postSalesOrder(orders) {
+async function postSalesOrder(orders, sellerCompany) {
     for (let i = 0; i < orders.length; i++) {
         let purchaseOrderId = orders[i].documentLines[0].orderId;
         await pool.query('SELECT reference_1 FROM master_data WHERE reference_2 = $1', [purchaseOrderId], async function(error, result) {
@@ -49,7 +49,7 @@ async function postSalesOrder(orders) {
                 }
 
                 try {
-                    let res = await sendRequest('post', 'https://my.jasminsoftware.com/api/224814/224814-0001/sales/orders', 1, orderResource);
+                    let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/sales/orders`, 1, orderResource);
                     let saleOrderId = res.data;
 
                     await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [saleOrderId, purchaseOrderId, "Document"], (error, result) => {
@@ -72,9 +72,9 @@ async function postSalesOrder(orders) {
     }
 }
 
-async function getPurchaseOrders() {
-    let res = await sendRequest('get', 'https://my.jasminsoftware.com/api/227116/227116-0001/purchases/orders', 2);
-    postSalesOrder(res.data);
+async function getPurchaseOrders(sellerCompany, buyerCompany) {
+    let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders`, 2);
+    postSalesOrder(res.data, sellerCompany);
 }
 
 module.exports = { router, getPurchaseOrders };
