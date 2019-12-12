@@ -87,9 +87,9 @@ async function testDB() {
 testDB();
 
 getAcessToken();
-/*
+
 setTimeout(function() {
     getPurchaseOrders();
-}, 2000);*/
+}, 2000);
 
 module.exports = app;
