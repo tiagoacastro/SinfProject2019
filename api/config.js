@@ -12,4 +12,15 @@ const pool = new Pool({
     ssl: true,
 });
 
-module.exports = { pool }
+let client;
+
+async function connect() {
+    client = await pool.connect();
+    return client;
+}
+
+function getClient() {
+    return client;
+}
+
+module.exports = { pool, connect, getClient }
