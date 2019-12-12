@@ -11,10 +11,10 @@ router.get('/company/:companyID/sales', function(req, res, next) {
     res.send('respond with a resource');
 });
 
-async function postSalesOrder(orders, sellerCompany) {
+async function postSalesOrder(orders, sellerCompany, buyerCompany) {
     for (let i = 0; i < orders.length; i++) {
         let purchaseOrderId = orders[i].documentLines[0].orderId;
-        await pool.query('SELECT reference_1 FROM master_data WHERE reference_2 = $1', [purchaseOrderId], async function(error, result) {
+        await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [purchaseOrderId], async function(error, result) {
             if (error) {
                 return console.error('Error executing SELECT query', error.stack)
             }
@@ -49,14 +49,23 @@ async function postSalesOrder(orders, sellerCompany) {
                 }
 
                 try {
-                    let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/sales/orders`, 1, orderResource);
+                    let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/sales/orders`, sellerCompany.id, orderResource);
                     let saleOrderId = res.data;
 
-                    await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [saleOrderId, purchaseOrderId, "Document"], (error, result) => {
+                    let reference_1, reference_2;
+                    if (sellerCompany.id == 1) {
+                        reference_1 = saleOrderId;
+                        reference_2 = purchaseOrderId;
+                    } else {
+                        reference_1 = saleOrderId;
+                        reference_2 = purchaseOrderId;
+                    }
+
+                    await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, "Document"], (error, result) => {
                         if (error) {
                             return console.error('Error executing INSERT query', error.stack)
                         } else {
-                            console.log(purchaseOrderId + ' - Doesnt exist, sales order was created on company 1 with id: ' + saleOrderId)
+                            console.log(purchaseOrderId + ' - Doesnt exist, sales order was created on company' + sellerCompany.id + 'with id: ' + saleOrderId)
                         }
                     });
                 } catch (err) {
@@ -64,7 +73,7 @@ async function postSalesOrder(orders, sellerCompany) {
                 }
             } else {
                 if (rows.length == 1)
-                    console.log(purchaseOrderId + ' - Already exists with id on company 1 being: ' + rows[0])
+                    console.log(purchaseOrderId + ' - Already exists with id on company ' + sellerCompany.id + ' being: ' + rows[0])
                 else
                     console.log(purchaseOrderId + ' - Error with order check')
             }
@@ -73,8 +82,8 @@ async function postSalesOrder(orders, sellerCompany) {
 }
 
 async function getPurchaseOrders(sellerCompany, buyerCompany) {
-    let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders`, 2);
-    postSalesOrder(res.data, sellerCompany);
+    let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders`, buyerCompany.id);
+    postSalesOrder(res.data, sellerCompany, buyerCompany);
 }
 
 module.exports = { router, getPurchaseOrders };
