@@ -5,11 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require("cors");
 const bodyParser = require('body-parser');
-const { pool } = require('./config')
+const { pool, connect, getClient } = require('./config')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var testAPIRouter = require("./routes/testAPI");
+var mappedProducts = require("./routes/products");
 var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
 var { getPurchaseOrders } = require('./routes/sales');
@@ -30,15 +31,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use("/testAPI", testAPIRouter);
+app.use("/products", mappedProducts);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -53,7 +54,7 @@ app.use(function(err, req, res, next) {
 //---------------------------
 
 async function testDB() {
-    const client = await pool.connect();
+    const client = await connect();
 
     //example query insert
     await client.query('INSERT INTO processes (name) VALUES ($1)', ['test'], (error, result) => {
@@ -79,6 +80,7 @@ async function testDB() {
         console.log('deleted')
     });
 }
+
 
 //---------------------------
 //------------code-----------

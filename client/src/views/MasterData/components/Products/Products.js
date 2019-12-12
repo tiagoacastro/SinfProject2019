@@ -2,21 +2,16 @@ import React from 'react';
 import MaterialTable from 'material-table';
 import { Dialog, DialogContent, DialogActions, DialogTitle, Typography } from '@material-ui/core';
 import { Grid, Divider, Box, Button, TextField, Chip } from '@material-ui/core';
-import { getProcesses } from './requests'
+import { getMappedProducts, postMappedProducts } from './requests'
 import { MapDialog } from '../../components';
 
 const Products = props => {
 
-    const [processData, setProcessData] = React.useState();
     const [state, setState] = React.useState({
         detailsDialogOpen: false,
         addDialogOpen: false,
         selectedRow: [{}],
-        //later on will be processData
-        data: [
-            { id: '48309832', name: 'test', id1: '222', id2: '333' },
-            { id: '48309833', name: 'test2', id1: '122', id2: '313' },
-        ],
+        mappedProducts: [],
     });
 
     const columns = [
@@ -47,19 +42,30 @@ const Products = props => {
     };
 
     React.useEffect(() => {
-        getProcesses()
+        getMappedProducts()
             .then((response) => {
-                setProcessData(response.data.products);
+                const data = response.data.mappedProducts;
+                setState({ ...state, mappedProducts: data });
             })
             .catch((err) => { });
     }, []);
+
+    /*
+    React.useEffect(() => {
+        postMappedProducts(10, 20, "cenas")
+            .then((response) => {
+                console.log("sent")
+            })
+            .catch((err) => { });
+    }, []);
+*/
 
     return (
         <div>
             <MaterialTable
                 title="Products"
                 columns={columns}
-                data={state.data}
+                data={state.mappedProducts}
                 actions={[
                     {
                         icon: 'add',

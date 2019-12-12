@@ -1,6 +1,5 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { Chip } from '@material-ui/core';
 import { getClients } from './requests'
 
 const Entities = props => {
@@ -34,13 +33,13 @@ const Entities = props => {
         setState({ ...state, selectedRow: selectedRow, dialogOpen: false });
     };
 
-    React.useEffect(() => {
+    /*React.useEffect(() => {
         getClients()
             .then((response) => {
                 setEntetiesData(response.data);
             })
             .catch((err) => { });
-    }, []);
+    }, []);*/
 
     return (
         <div>
