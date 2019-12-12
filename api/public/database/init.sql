@@ -18,7 +18,7 @@ CREATE TYPE categories AS ENUM('Product', 'Document', 'Entity');
 
 CREATE TABLE master_data (
   id            SERIAL PRIMARY KEY,
-  name          TEXT NOT NULL UNIQUE,
+  name          TEXT UNIQUE,
   reference_1   TEXT NOT NULL UNIQUE,
   reference_2   TEXT NOT NULL UNIQUE,
   category      categories NOT NULL
