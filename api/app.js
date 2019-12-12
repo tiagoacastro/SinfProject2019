@@ -10,6 +10,7 @@ const { pool } = require('./config')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var testAPIRouter = require("./routes/testAPI");
+var companyRouter = require("./routes/company");
 var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
 var { postSalesOrder } = require('./routes/sales');
@@ -31,6 +32,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/testAPI", testAPIRouter);
+app.use("/company", companyRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
