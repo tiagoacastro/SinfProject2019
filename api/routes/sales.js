@@ -14,7 +14,6 @@ router.get('/company/:companyID/sales', function(req, res, next) {
 async function postSalesOrder(orders) {
     for (let i = 0; i < orders.length; i++) {
         let purchaseOrderId = orders[i].documentLines[0].orderId;
-        console.log(purchaseOrderId);
         await pool.query('SELECT reference_1 FROM master_data WHERE reference_2 = $1', [purchaseOrderId], async function(error, result) {
             if (error) {
                 return console.error('Error executing SELECT query', error.stack)
