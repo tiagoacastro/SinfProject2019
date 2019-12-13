@@ -1,4 +1,4 @@
-var { postInvoices } = require('./invoices');
+var { postSalesInvoice } = require('./invoices');
 var { sendRequest } = require('./../utils/jasmin');
 const { pool } = require('../config')
 
@@ -72,7 +72,7 @@ async function getDeliveryOrders(sellerCompany, buyerCompany) {
     var activeDelivery = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
 
     postGoodsReceipt(activeDelivery, sellerCompany, buyerCompany);
-    postInvoices(activeDelivery, sellerCompany, buyerCompany);
+    //postSalesInvoice(activeDelivery, sellerCompany, buyerCompany);
 }
 
 module.exports = { getDeliveryOrders };

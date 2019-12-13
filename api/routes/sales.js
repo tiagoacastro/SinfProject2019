@@ -45,9 +45,9 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 };
 
                 let orderResource = {
-                    documentType: "ECL",
-                    serie: "2019",
-                    buyerCustomerParty: "0003",
+                    documentType: orders[i].documentType,
+                    serie: orders[i].serie,
+                    buyerCustomerParty: buyerCompany.client_id,
                     documentDate: "now",
                     discount: orders[i].discount,
                     currency: orders[i].currency,
@@ -55,8 +55,8 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                     paymentTerm: orders[i].paymentTerm,
                     deliveryTerm: orders[i].deliveryTerm,
                     salesChannel: "ONLINE",
-                    company: "SINF",
-                    remarks: "A sua encomenda totaliza <b>0 KG<\/b>, será despachada por <b>CTT Expresso 10<\/b> e o meio de pagamento escolhido é <b>Numerário<\/b>.",
+                    company: orders[i].company,
+                    remarks: "order",
                     unloadingPoint: orders[i].unloadingPoint,
                     unloadingStreetName: orders[i].unloadingStreetName,
                     unloadingBuildingNumber: orders[i].unloadingBuildingNumber,
