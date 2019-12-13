@@ -9,8 +9,6 @@ router.get('/mapped', async function (req, res, next) {
     res.send({ mappedProducts: mappedProducts });
 });
 
-module.exports = router;
-
 router.post('/map', async function (req, res, next) {
     const reference_1 = req.body.reference_1;
     const reference_2 = req.body.reference_2;
@@ -28,45 +26,6 @@ async function mapProducts(reference_1, reference_2) {
     const client = getClient();
     return client.query('INSERT INTO master_data (reference_1,reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, 'Product'])
 }
-
-router.get('/company/:companyID/sales/items', async function (req, res, next) {
-    const companyID = req.params.companyID;
-
-    const companyInfo = await getCompanyInformation(companyID);
-    const tenant = companyInfo.tenant;
-    const organization = companyInfo.organization;
-    const itemKeys = await getSalesItems(companyID, tenant, organization);
-    res.send(itemKeys);
-});
-
-router.get('/company/:companyID/purchase/items', async function (req, res, next) {
-    const companyID = req.params.companyID;
-
-    const companyInfo = await getCompanyInformation(companyID);
-    const tenant = companyInfo.tenant;
-    const organization = companyInfo.organization;
-    const itemKeys = await getPurchaseItems(companyID, tenant, organization);
-    res.send(itemKeys);
-});
-
-async function getPurchaseItems(companyID, tenant, organization) {
-    return new Promise(function (resolve, reject) {
-        sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/purchasesCore/purchasesItems', parseInt(companyID))
-            .then(resJasmin => {
-                resolve(resJasmin.data.map(a => a.itemKey));
-            }).catch((err) => { console.log(err) });
-    });
-};
-
-async function getSalesItems(companyID, tenant, organization) {
-    return new Promise(function (resolve, reject) {
-        sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/salesCore/salesItems', parseInt(companyID))
-            .then(resJasmin => {
-                resolve(resJasmin.data.map(a => a.itemKey));
-            }).catch((err) => { console.log(err) });
-    });
-};
-
 
 async function getMappedProducts() {
     const client = getClient();
@@ -93,3 +52,5 @@ async function getNotMappedProducts(companyID, productKeys) {
 
     return unmapped;
 }
+
+module.exports = router;

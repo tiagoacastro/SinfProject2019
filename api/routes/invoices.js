@@ -5,7 +5,7 @@ async function postSalesInvoice(orders, sellerCompany, buyerCompany) {
 
     for (let i = 0; i < orders.length; i++) {
         let deliveryOrderId = orders[i].id;
-        await pool.query('SELECT document_2 FROM private_data WHERE id_company = $1 AND document_1 = $2', [sellerCompany.id, deliveryOrderId], async function(error, result) {
+        await pool.query('SELECT document_2 FROM private_data WHERE id_company = $1 AND document_1 = $2', [sellerCompany.id, deliveryOrderId], async function (error, result) {
             if (error) {
                 return console.error('Error executing SELECT query', error.stack)
             }
@@ -80,4 +80,4 @@ async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
     console.log('purchase invoice');
 }
 
-module.exports = { postInvoices };
+module.exports = { postSalesInvoice };

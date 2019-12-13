@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 export const getSalesItems = (companyID) => {
-    return axios.get(`http://localhost:9000/products/company/${companyID}/sales/items`);
+    return axios.get(`http://localhost:9000/company/${companyID}/sales/items`);
 }
 
 export const getPurchaseItems = (companyID) => {
-    return axios.get(`http://localhost:9000/products/company/${companyID}/purchase/items`);
+    return axios.get(`http://localhost:9000/company/${companyID}/purchases/items`);
 }
 
 export const postMappedProducts = (reference_1, reference_2) => {
