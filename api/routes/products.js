@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var { getClient } = require('../config');
 var { sendRequest } = require('./../utils/jasmin');
+var { getCompanyInformation } = require('../utils/requests')
 
 router.get('/mapped', async function (req, res, next) {
     const mappedProducts = await getMappedProducts();
@@ -47,17 +48,6 @@ router.get('/company/:companyID/purchase/items', async function (req, res, next)
     const itemKeys = await getPurchaseItems(companyID, tenant, organization);
     res.send(itemKeys);
 });
-
-async function getCompanyInformation(companyID) {
-    const client = getClient();
-
-    return new Promise(function (resolve, reject) {
-        client.query(`SELECT tenant, organization FROM companies where id=${companyID}`)
-            .then(result => {
-                resolve({ tenant: result.rows[0].tenant, organization: result.rows[0].organization });
-            }).catch((err) => { console.error('Error executing SELECT query', err.stack) });
-    });
-};
 
 async function getPurchaseItems(companyID, tenant, organization) {
     return new Promise(function (resolve, reject) {

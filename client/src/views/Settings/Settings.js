@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
-import { CompanySettings, Connection } from './components';
+import { CompanySettings } from './components';
 import { getCompaniesData } from './requests';
 
 const useStyles = makeStyles(theme => ({
@@ -10,17 +10,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const MasterData = () => {
+const Settings = props => {
   const classes = useStyles();
-  const [companiesData, setCompaniesData] = React.useState();
+  const [companiesData, setCompaniesData] = React.useState([{}, {}]);
 
   React.useEffect(() => {
     getCompaniesData()
       .then((response) => {
-        setCompaniesData(response.data);
+        const data = response.data;
+        setCompaniesData(data);
       })
-      .catch((err) => {
-      });
+      .catch((err) => { });
   }, []);
 
   return (
@@ -31,27 +31,21 @@ const MasterData = () => {
       >
         <Grid
           item
+          lg={6}
           xs={12}
         >
-          <Connection />
+          <CompanySettings companyInfo={companiesData[0]} />
         </Grid>
         <Grid
           item
           lg={6}
           xs={12}
         >
-          <CompanySettings />
-        </Grid>
-        <Grid
-          item
-          lg={6}
-          xs={12}
-        >
-          <CompanySettings />
+          <CompanySettings companyInfo={companiesData[1]} />
         </Grid>
       </Grid>
     </div>
   );
 };
 
-export default MasterData;
+export default Settings;
