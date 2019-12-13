@@ -100,7 +100,9 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
 
 async function getPurchaseOrders(sellerCompany, buyerCompany) {
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders`, buyerCompany.id);
-    postSalesOrder(res.data, sellerCompany, buyerCompany);
+    var purhcaseOrderArr = res.data;
+    var activeOrder = purchaseOrderArr.filter(order => !order.isDeleted);
+    postSalesOrder(activeOrder.data, sellerCompany, buyerCompany);
 }
 
 module.exports = { router, getPurchaseOrders };

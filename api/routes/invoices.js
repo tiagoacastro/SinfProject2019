@@ -1,14 +1,16 @@
 var { sendRequest } = require('./../utils/jasmin');
 
-function postInvoices(orders) {
-    postSalesInvoice();
-    postPurchasesInvoice();
+function postInvoices(orders, sellerCompany, buyerCompany) {
+    postSalesInvoice(orders, sellerCompany, buyerCompany);
+    postPurchasesInvoice(orders, sellerCompany, buyerCompany);
 }
 
-async function postSalesInvoice() {
+async function postSalesInvoice(orders, sellerCompany, buyerCompany) {
+    console.log('sale invoice');
+    /*
     for (let i = 0; i < orders.length; i++) {
         let invoiceBody = {
-           
+
         };
 
         try {
@@ -18,12 +20,15 @@ async function postSalesInvoice() {
         }
 
     }
+    */
 }
 
-async function postPurchasesInvoice() {
+async function postPurchasesInvoice(orders, sellerCompany, buyerCompany) {
+    console.log('purchase invoice');
+    /*
     for (let i = 0; i < orders.length; i++) {
         let invoiceBody = {
-           
+
         };
 
         try {
@@ -33,6 +38,7 @@ async function postPurchasesInvoice() {
         }
 
     }
+    */
 }
 
-module.exports = {postInvoices};
+module.exports = { postInvoices };
