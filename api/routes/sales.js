@@ -20,29 +20,30 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
             }
             let rows = result.rows;
             let lines = orders[i].documentLines;
-            console.log(lines);
-            let dl = [];
-            for (let i = 0; i < lines.length; i++) {
-                await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [lines[i].purchasesItem], async function(error, result) {
-                    if (error) {
-                        return console.error('Error executing SELECT query', error.stack)
-                    } else {
-                        if (result.rows.length != 1) {
-                            console.log(lines[i].purchasesItem);
-                            return console.error('Error getting master data for product', error.stack)
+
+            if (rows.length == 0) {
+                let dl = [];
+                for (let i = 0; i < lines.length; i++) {
+                    await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [lines[i].purchasesItem], async function(error, result) {
+                        if (error) {
+                            return console.error('Error executing SELECT query', error.stack)
                         } else {
-                            dl[i] = {
-                                salesItem: result.rows[0],
-                                quantity: lines[i].quantity,
-                                unit: lines[i].unit,
-                                itemTaxSchema: lines[i].itemTaxSchema,
-                                unitPrice: lines[i].unitPrice
+                            if (result.rows.length != 1) {
+                                console.log(lines[i].purchasesItem);
+                                return console.error('Error getting master data for product', error.stack)
+                            } else {
+                                dl[i] = {
+                                    salesItem: result.rows[0],
+                                    quantity: lines[i].quantity,
+                                    unit: lines[i].unit,
+                                    itemTaxSchema: lines[i].itemTaxSchema,
+                                    unitPrice: lines[i].unitPrice
+                                }
                             }
                         }
-                    }
-                });
-            };
-            if (rows.length == 0) {
+                    });
+                };
+
                 let orderResource = {
                     documentType: "ECL",
                     serie: "2019",
