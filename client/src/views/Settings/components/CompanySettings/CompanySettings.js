@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CompanySettings = props => {
-  const { className, ...rest } = props;
+  const { companyInfo, className, ...rest } = props;
 
   const classes = useStyles();
   const theme = useTheme();
@@ -76,9 +76,11 @@ const CompanySettings = props => {
       <Divider />
 
       <CardContent>
-        <Box fontWeight="fontWeightRegular" m={1}><Typography>Company Name: Duriola</Typography></Box>
-        <Box fontWeight="fontWeightRegular" m={1}><Typography>Client ID: Duriola</Typography></Box>
-        <Box fontWeight="fontWeightRegular" m={1}><Typography>Client Secret: Duriola</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Company Name: {companyInfo.name}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Client ID: {companyInfo.client_id}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Client Secret: {companyInfo.secret_id}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Tenant: {companyInfo.tenant}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography>Organization: {companyInfo.organization}</Typography></Box>
       </CardContent>
     </Card >
   );

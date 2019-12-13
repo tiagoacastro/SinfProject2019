@@ -1,34 +1,89 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogActions, DialogTitle, Typography } from '@material-ui/core';
-import { Grid, Divider, Box, Button, TextField, MenuItem } from '@material-ui/core';
+import { Grid, Divider, Box, Button, TextField, MenuItem, NativeSelect, FormControl, FormHelperText } from '@material-ui/core';
+import { getSalesItems, getPurchaseItems, postMappedProducts } from './requests';
 
 const MapDialog = props => {
 
     const { open, close, save } = props;
 
-    const [selectAstate, setSelectAstate] = React.useState('1');
-    const [selectBstate, setSelectBstate] = React.useState('2');
+    const [salesState, setSalesState] = React.useState('');
+    const [salesItems, setSalesItems] = React.useState([]);
 
-    const handleAChange = event => {
-        setSelectAstate(event.target.value);
+    const [purchaseState, setPurchaseState] = React.useState('');
+    const [purchaseItems, setPurchaseItems] = React.useState([]);
+
+    const [company1State, setCompany1State] = React.useState('');
+    const [company2State, setCompany2State] = React.useState('');
+
+    const handleSalesChange = event => {
+        setSalesState(event.target.value);
     };
 
-    const handleBChange = event => {
-        setSelectBstate(event.target.value);
+    const handlePurchaseChange = event => {
+        setPurchaseState(event.target.value);
     };
 
-    const company1Products = [
-        { value: '1', label: '#1 Name Product A', },
-        { value: '2', label: '#2 Name Product B', },
-        { value: '3', label: '#3 Name Product C', },
-        { value: '4', label: '#4 Name Product D', },
-    ];
+    const handleCompany1Change = event => {
+        setSalesState('');
+        setSalesItems([]);
 
-    const company2Products = [
-        { value: '1', label: '#1 Name Product A', },
-        { value: '2', label: '#2 Name Product B', },
-        { value: '3', label: '#3 Name Product C', },
-        { value: '4', label: '#4 Name Product D', },
+        setCompany1State(event.target.value);
+        handleCompany2Change(event.target.value);
+
+        getSalesItems(parseInt(event.target.value))
+            .then((response) => {
+                const items = response.data.map(a => JSON.parse(`{"value": "${a}", "label":"${a}"}`));
+                setSalesItems(items);
+
+            })
+            .catch((err) => { });
+    };
+
+    const handleCompany2Change = (idCompany1) => {
+        setPurchaseState('');
+        setPurchaseItems([]);
+        let idCompany2;
+
+        if (idCompany1 === '1') {
+            setCompany2State("WineWard");
+            idCompany2 = 2;
+        }
+        else {
+            setCompany2State("GrapeVine");
+            idCompany2 = 1;
+        }
+
+        getPurchaseItems(idCompany2)
+            .then((response) => {
+                const items = response.data.map(a => JSON.parse(`{"value": "${a}", "label":"${a}"}`));
+                setPurchaseItems(items);
+
+            })
+            .catch((err) => { });
+
+    };
+
+    const submitForm = (event) => {
+        event.preventDefault();
+        if (!(company1State == '' || company2State == '' || salesState == '' || purchaseState == '')) {
+            if (company1State == '1') {
+                console.log(postMappedProducts(salesState, purchaseState));
+            } else postMappedProducts(purchaseState, salesState);
+        }
+
+        setCompany1State('');
+        setCompany2State('');
+        setSalesState('');
+        setPurchaseState('');
+        setSalesItems([]);
+        setPurchaseItems([]);
+    }
+
+
+    const companies = [
+        { value: '1', label: 'GrapeVine', },
+        { value: '2', label: 'WineWard', }
     ];
 
     return (
@@ -42,16 +97,45 @@ const MapDialog = props => {
                 <DialogTitle id="draggable-dialog-title">Map Products</DialogTitle>
                 <Divider />
                 <DialogContent>
-                    <Box mt={3} mb={6}>
-                        <form noValidate autoComplete="off">
+                    <form onSubmit={submitForm}>
+                        <Box mt={3} mb={6}>
                             <Grid container justify="center">
                                 <Grid container justify="center" item xs={6} py={1}>
                                     <Grid container justify="center">
-                                        <Box mb={1}><Typography>WinweWard</Typography></Box>
+                                        <Box mb={1}><Typography>Supplying Company</Typography></Box>
                                     </Grid>
                                     <Grid container justify="center">
-                                        <TextField id="select-company-A" select label="Select" value={selectAstate} onChange={handleAChange} helperText="Please select a product">
-                                            {company1Products.map(option => (
+                                        <FormControl required>
+                                            <TextField id="select-company-A" select label="Select" value={company1State} onChange={handleCompany1Change} helperText="Please select a company">
+                                                {companies.map(option => (
+                                                    <MenuItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+                                <Grid container justify="center" item xs={6} py={1}>
+                                    <Grid container justify="center">
+                                        <Box mb={1}><Typography>Purchasing Company</Typography></Box>
+                                    </Grid>
+                                    <Grid container justify="center">
+                                        <FormControl disabled>
+                                            <NativeSelect value={company2State} >
+                                                <option value={company2State}>{company2State}</option>
+                                            </NativeSelect>
+                                            <FormHelperText>To be changed automatically</FormHelperText>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+                                <Grid container justify="center" item xs={6} py={1}>
+                                    <Grid container justify="center">
+                                        <Box mt={4} mb={1}><Typography>Sales Item</Typography></Box>
+                                    </Grid>
+                                    <Grid container justify="center">
+                                        <TextField required id="select-company-A" select label="Select" value={salesState} onChange={handleSalesChange} helperText="Please select a sales item">
+                                            {salesItems.map(option => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
                                                 </MenuItem>
@@ -61,11 +145,11 @@ const MapDialog = props => {
                                 </Grid>
                                 <Grid container justify="center" item xs={6} py={1}>
                                     <Grid container justify="center">
-                                        <Box mb={1}><Typography>GrapeVine</Typography></Box>
+                                        <Box mt={4} mb={1}><Typography>Purchase Item</Typography></Box>
                                     </Grid>
                                     <Grid container justify="center">
-                                        <TextField id="select-company-A" select label="Select" value={selectBstate} onChange={handleBChange} helperText="Please select a product">
-                                            {company2Products.map(option => (
+                                        <TextField required id="select-company-A" select label="Select" value={purchaseState} onChange={handlePurchaseChange} helperText="Please select a sales item">
+                                            {purchaseItems.map(option => (
                                                 <MenuItem key={option.value} value={option.value}>
                                                     {option.label}
                                                 </MenuItem>
@@ -74,13 +158,13 @@ const MapDialog = props => {
                                     </Grid>
                                 </Grid>
                             </Grid>
-                        </form>
-                    </Box>
-                    <Divider />
-                    <DialogActions>
-                        <Button onClick={close}>Cancel</Button>
-                        <Button onClick={() => save(selectAstate, selectBstate)}>Save</Button>
-                    </DialogActions >
+                        </Box>
+                        <Divider />
+                        <DialogActions>
+                            <Button onClick={close}>Cancel</Button>
+                            <Button onClick={close} type="submit">Save</Button>
+                        </DialogActions >
+                    </form>
                 </DialogContent>
             </Dialog >
         </div >

@@ -10,12 +10,11 @@ const { pool, connect, getClient } = require('./config')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var testAPIRouter = require("./routes/testAPI");
-var mappedProducts = require("./routes/products");
+var productsRouter = require("./routes/products");
 var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
 var { getPurchaseOrders } = require('./routes/sales');
 var { getDeliveryOrders } = require('./routes/deliveries');
-
 var app = express();
 
 // view engine setup
@@ -30,16 +29,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use("/products", mappedProducts);
+app.use('/products', productsRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -104,9 +102,11 @@ testDB();
 
 initialize();
 
-setTimeout(function() {
+setTimeout(function () {
     //getPurchaseOrders(companies[0], companies[1]);
     getDeliveryOrders(companies[0], companies[1]);
 }, 2000);
+
+
 
 module.exports = app;
