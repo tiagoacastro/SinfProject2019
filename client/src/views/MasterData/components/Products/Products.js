@@ -15,14 +15,9 @@ const Products = props => {
     });
 
     const columns = [
-        {
-            title: 'ID', field: 'id',
-            render: (row) =>
-                <Button onClick={() => { setState({ ...state, selectedRow: row, detailsDialogOpen: true }); }}>
-                    {`#${row.id}`}
-                </Button >
-        },
-        { title: 'Name', field: 'name' }
+        { title: 'ID', field: 'id', },
+        { title: 'Ref WineWard', field: 'reference_1' },
+        { title: 'Ref GrapeVine', field: 'reference_2' }
     ];
 
     const handleDetailsClose = () => {
@@ -34,10 +29,10 @@ const Products = props => {
         setState({ ...state, addDialogOpen: false });
     };
 
-    const handleAddSave = (idProductA, idProductB) => {
+    const handleAddSave = (productA, productB) => {
         //save ids in database and get universal id
         const data = state.data;
-        data.push({ id: '1', name: 'test2', id1: '122', id2: '313' })
+        data.push({ id: '1', ref1: productA, ref1: productB })
         setState({ ...state, data, addDialogOpen: false });
     };
 
@@ -49,16 +44,6 @@ const Products = props => {
             })
             .catch((err) => { });
     }, []);
-
-    /*
-    React.useEffect(() => {
-        postMappedProducts(10, 20, "cenas")
-            .then((response) => {
-                console.log("sent")
-            })
-            .catch((err) => { });
-    }, []);
-*/
 
     return (
         <div>

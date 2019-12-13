@@ -15,7 +15,6 @@ var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
 var { getPurchaseOrders } = require('./routes/sales');
 var { getDeliveryOrders } = require('./routes/deliveries');
-
 var app = express();
 
 // view engine setup
@@ -31,7 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use("/products", mappedProducts);
+app.use('/products', mappedProducts);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -108,5 +107,7 @@ setTimeout(function() {
     //getPurchaseOrders(companies[0], companies[1]);
     getDeliveryOrders(companies[0], companies[1]);
 }, 2000);
+
+
 
 module.exports = app;
