@@ -8,7 +8,7 @@ import {
   MasterData as MasterDataView,
   ProcessLogs as LogsView,
   Settings as SettingsView,
-  ProcessDefinition as ProcessDefinitionView
+  Process as ProcessView
 } from './views';
 
 const Routes = () => {
@@ -43,8 +43,8 @@ const Routes = () => {
         path="/settings"
       />
       <RouteWithLayout
-        component={ProcessDefinitionView}
-        title="Process Definition"
+        component={ProcessView}
+        title="Processes"
         exact
         layout={MainLayout}
         path="/process"
