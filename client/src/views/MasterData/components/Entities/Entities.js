@@ -1,57 +1,52 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { getClients } from './requests'
+import { getMappedEntities } from './requests'
+import { EntitiesMapDialog } from './components';
 
-const Entities = props => {
+const Entities = () => {
 
-    const [entitiesData, setEntetiesData] = React.useState();
     const [state, setState] = React.useState({
-        dialogOpen: false,
-        selectedRow: [{}],
+        addDialogOpen: false,
+        entitiesData: [],
     });
 
     const columns = [
         { title: 'ID', field: 'id' },
-        { title: 'Name', field: 'name' },
-        { title: 'ClientID', field: 'clientid' },
-        { title: 'SupplierID', field: 'supplierid' }
+        { title: 'REF Client', field: 'reference_1' },
+        { title: 'REF Supplier', field: 'reference_2' }
     ];
 
-    //later on will be processData
-    const exampleData = [
-        { id: '1', name: 'WineWard', clientid: 'C01', supplierid: 'F04' },
-        { id: '2', name: 'GrapeVine', clientid: 'C03', supplierid: 'F10' },
-    ];
-
-    const handleClose = () => {
-        const selectedRow = state.selectedRow
-        setState({ ...state, selectedRow: selectedRow, dialogOpen: false });
+    const handleAddClose = () => {
+        setState({ ...state, addDialogOpen: false });
     };
 
-    const handleOpen = () => {
-        const selectedRow = state.selectedRow
-        setState({ ...state, selectedRow: selectedRow, dialogOpen: false });
-    };
-
-    /*React.useEffect(() => {
-        getClients()
+    React.useEffect(() => {
+        getMappedEntities()
             .then((response) => {
-                setEntetiesData(response.data);
+                const data = response.data.mappedEntities;
+                setState({ ...state, entitiesData: data });
             })
             .catch((err) => { });
-    }, []);*/
+    }, []);
 
     return (
         <div>
             <MaterialTable
                 title="Entities"
                 columns={columns}
-                data={exampleData}
-                options={{
-                    search: false,
-                    paging: false
-                }}
+                data={state.entitiesData}
+                actions={[
+                    {
+                        icon: 'add',
+                        tooltip: 'Add User',
+                        isFreeAction: true,
+                        onClick: (event) => {
+                            setState({ ...state, addDialogOpen: true });
+                        }
+                    }
+                ]}
             />
+            <EntitiesMapDialog open={state.addDialogOpen} close={handleAddClose} />
         </div >
     );
 }

@@ -3,9 +3,9 @@ import { Dialog, DialogContent, DialogActions, DialogTitle, Typography } from '@
 import { Grid, Divider, Box, Button, TextField, MenuItem, NativeSelect, FormControl, FormHelperText } from '@material-ui/core';
 import { getSalesItems, getPurchaseItems, postMappedProducts } from './requests';
 
-const MapDialog = props => {
+const ProductMapDialog = props => {
 
-    const { open, close, save } = props;
+    const { open, close } = props;
 
     const [salesState, setSalesState] = React.useState('');
     const [salesItems, setSalesItems] = React.useState([]);
@@ -58,7 +58,6 @@ const MapDialog = props => {
             .then((response) => {
                 const items = response.data.map(a => JSON.parse(`{"value": "${a}", "label":"${a}"}`));
                 setPurchaseItems(items);
-
             })
             .catch((err) => { });
 
@@ -66,8 +65,8 @@ const MapDialog = props => {
 
     const submitForm = (event) => {
         event.preventDefault();
-        if (!(company1State == '' || company2State == '' || salesState == '' || purchaseState == '')) {
-            if (company1State == '1') {
+        if (!(company1State === '' || company2State === '' || salesState === '' || purchaseState === '')) {
+            if (company1State === '1') {
                 console.log(postMappedProducts(salesState, purchaseState));
             } else postMappedProducts(purchaseState, salesState);
         }
@@ -172,4 +171,4 @@ const MapDialog = props => {
 }
 
 
-export default MapDialog;
+export default ProductMapDialog;

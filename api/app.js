@@ -8,9 +8,10 @@ const bodyParser = require('body-parser');
 const { pool, connect, getClient } = require('./config')
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var testAPIRouter = require("./routes/testAPI");
 var productsRouter = require("./routes/products");
+var salesRouter = require("./routes/sales");
+var purchasesRouter = require("./routes/purchases");
+var entitiesRouter = require("./routes/entities");
 var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
 var { getPurchaseOrders } = require('./routes/sales');
@@ -31,14 +32,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/products', productsRouter);
+app.use('/entities', entitiesRouter);
+app.use('/company/:companyID/sales', salesRouter);
+app.use('/company/:companyID/purchases', purchasesRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
