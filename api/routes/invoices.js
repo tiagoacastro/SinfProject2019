@@ -80,8 +80,4 @@ async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
     console.log('purchase invoice');
 }
 
-<<<<<<< HEAD
 module.exports = { postPurchasesInvoice };
-=======
-module.exports = { postSalesInvoice };
->>>>>>> master
