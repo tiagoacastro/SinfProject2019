@@ -12,10 +12,9 @@ router.get('/mapped', async function (req, res, next) {
 router.post('/map', async function (req, res, next) {
     const reference_1 = req.body.reference_1;
     const reference_2 = req.body.reference_2;
-    let status;
 
     try {
-        status = await mapProducts(reference_1, reference_2);
+        await mapProducts(reference_1, reference_2);
         res.sendStatus(200);
     } catch (err) {
         res.sendStatus(400);

@@ -1,15 +1,12 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { Dialog, DialogContent, DialogActions, DialogTitle, Typography } from '@material-ui/core';
-import { Grid, Divider, Box, Button, TextField, Chip } from '@material-ui/core';
-import { getMappedProducts, postMappedProducts } from './requests'
-import { MapDialog } from '../../components';
+import { getMappedProducts } from './requests'
+import { ProductMapDialog } from './components';
 
-const Products = props => {
+const Products = () => {
 
     const [state, setState] = React.useState({
         addDialogOpen: false,
-        selectedRow: [{}],
         mappedProducts: [],
     });
 
@@ -21,13 +18,6 @@ const Products = props => {
 
     const handleAddClose = () => {
         setState({ ...state, addDialogOpen: false });
-    };
-
-    const handleAddSave = (productA, productB) => {
-        //save ids in database and get universal id
-        const data = state.data;
-        data.push({ id: '1', ref1: productA, ref1: productB })
-        setState({ ...state, data, addDialogOpen: false });
     };
 
     React.useEffect(() => {
@@ -56,7 +46,7 @@ const Products = props => {
                     }
                 ]}
             />
-            <MapDialog open={state.addDialogOpen} close={handleAddClose} save={handleAddSave} />
+            <ProductMapDialog open={state.addDialogOpen} close={handleAddClose} />
 
         </div >
     );

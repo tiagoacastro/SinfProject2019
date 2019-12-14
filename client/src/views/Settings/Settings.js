@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Settings = props => {
+const Settings = () => {
   const classes = useStyles();
   const [companiesData, setCompaniesData] = React.useState([{}, {}]);
 
