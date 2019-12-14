@@ -10,6 +10,7 @@ DROP TYPE IF EXISTS categories;
 CREATE TABLE companies (
   id            SERIAL PRIMARY KEY,
   name          TEXT NOT NULL UNIQUE,
+  c_key         TEXT NOT NULL UNIQUE,
   client_id     TEXT NOT NULL UNIQUE,
   secret_id     TEXT NOT NULL UNIQUE,
   tenant        TEXT NOT NULL UNIQUE,
