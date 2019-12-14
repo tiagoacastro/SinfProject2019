@@ -32,16 +32,17 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                                 console.log(lines[i].purchasesItem);
                                 return console.error('Error getting master data for product', error.stack)
                             } else {
-                                dl[i] = {
+                                dl.push({
                                     salesItem: result.rows[0],
                                     quantity: lines[i].quantity,
                                     unit: lines[i].unit,
                                     itemTaxSchema: lines[i].itemTaxSchema,
                                     unitPrice: lines[i].unitPrice
-                                }
+                                });
                             }
                         }
                     });
+
                 };
 
                 let orderResource = {
@@ -101,9 +102,9 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
 
 async function getPurchaseOrders(sellerCompany, buyerCompany) {
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders`, buyerCompany.id);
-    var purhcaseOrderArr = res.data;
+    var purchaseOrderArr = res.data;
     var activeOrder = purchaseOrderArr.filter(order => !order.isDeleted);
-    postSalesOrder(activeOrder.data, sellerCompany, buyerCompany);
+    postSalesOrder(activeOrder, sellerCompany, buyerCompany);
 }
 
 module.exports = { router, getPurchaseOrders };

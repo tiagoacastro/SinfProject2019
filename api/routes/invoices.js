@@ -80,4 +80,4 @@ async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
     console.log('purchase invoice');
 }
 
-module.exports = { postInvoices };
+module.exports = { postPurchasesInvoice };

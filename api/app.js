@@ -15,6 +15,7 @@ var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
 var { getPurchaseOrders } = require('./routes/sales');
 var { getDeliveryOrders } = require('./routes/deliveries');
+var { getPayments } = require('./routes/payment');
 var app = express();
 
 // view engine setup
@@ -103,8 +104,9 @@ testDB();
 initialize();
 
 setTimeout(function() {
-    //getPurchaseOrders(companies[0], companies[1]);
-    getDeliveryOrders(companies[0], companies[1]);
+    getPurchaseOrders(companies[0], companies[1]);
+    //getDeliveryOrders(companies[0], companies[1]);
+    //getPayments(companies[0], companies[1]);
 }, 2000);
 
 

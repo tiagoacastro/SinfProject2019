@@ -22,19 +22,20 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
 
                     if (rows2.length != 0) {
 
-                        let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders/${rows2[0].reference_2}`, 2);
+                        let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders/${rows2[0].reference_2}`, buyerCompany.id);
 
-                        let orderBody = [{
-                            SourceDocKey: res.data.naturalKey,
-                            SourceDocLineNumber: orders[i].documentLines[0].sourceDocLine,
-                            quantity: orders[i].documentLines[0].quantity
-                        }];
+                        let orderBody = [];
+                        for(var j=0; j < order[i].documentLines.length; j++) {
 
-                        console.log(orderBody);
-                        console.log(`https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/goodsReceipt/processOrders/WINEWARD`)
-
+                            orderBody.push({
+                                SourceDocKey: res.data.naturalKey,
+                                SourceDocLineNumber: orders[i].documentLines[j].sourceDocLine,
+                                quantity: orders[i].documentLines[j].quantity
+                            });
+                        }
+                       
                         try {
-                            let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/goodsReceipt/processOrders/WINEWARD`, 2, orderBody);
+                            let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/goodsReceipt/processOrders/WINEWARD`, buyerCompany.id, orderBody);
                             let goodsReceiptId = res.data;
 
                             await pool.query('INSERT INTO master_data (reference_' + sellerCompany.id + ', reference_' + buyerCompany.id + ', category) VALUES ($1, $2, $3)', [deliveryOrderId, goodsReceiptId, "Document"], (error, result) => {
