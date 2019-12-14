@@ -23,12 +23,12 @@ CREATE TABLE private_data (
   document_2    TEXT NOT NULL UNIQUE,
 );
 
-CREATE TYPE categories AS ENUM('Product', 'Document', 'Entity');
+CREATE TYPE categories AS ENUM('Product', 'Document', 'Customer_Entity', 'Supplier_Entity');
 
 CREATE TABLE master_data (
   id            SERIAL PRIMARY KEY,
-  reference_1   TEXT NOT NULL UNIQUE,
-  reference_2   TEXT NOT NULL UNIQUE,
+  reference_1   TEXT NOT NULL,
+  reference_2   TEXT NOT NULL,
   category      categories NOT NULL
 );
 

@@ -25,7 +25,7 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
                         let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders/${rows2[0].reference_2}`, buyerCompany.id);
 
                         let orderBody = [];
-                        for(var j=0; j < order[i].documentLines.length; j++) {
+                        for (var j = 0; j < order[i].documentLines.length; j++) {
 
                             orderBody.push({
                                 SourceDocKey: res.data.naturalKey,
@@ -33,7 +33,7 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
                                 quantity: orders[i].documentLines[j].quantity
                             });
                         }
-                       
+
                         try {
                             let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/goodsReceipt/processOrders/WINEWARD`, buyerCompany.id, orderBody);
                             let goodsReceiptId = res.data;

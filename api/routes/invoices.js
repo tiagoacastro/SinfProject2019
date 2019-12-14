@@ -5,13 +5,28 @@ async function postSalesInvoice(orders, sellerCompany, buyerCompany) {
 
     for (let i = 0; i < orders.length; i++) {
         let deliveryOrderId = orders[i].id;
-        await pool.query('SELECT document_2 FROM private_data WHERE id_company = $1 AND document_1 = $2', [sellerCompany.id, deliveryOrderId], async function (error, result) {
+        await pool.query('SELECT document_2 FROM private_data WHERE id_company = $1 AND document_1 = $2', [sellerCompany.id, deliveryOrderId], async function(error, result) {
             if (error) {
                 return console.error('Error executing SELECT query', error.stack)
             }
 
             let rows = result.rows;
             if (rows.length == 0) {
+                let lines = orders[i].documentLines
+                let dl = [];
+
+                for (let i = 0; i < lines.length; i++) {
+                    dl.push({
+                        salesItem: lines[i].item,
+                        description: lines[i].description,
+                        quantity: lines[i].quantity,
+                        unitPrice: lines[i].unitCost,
+                        unit: lines[i].unit,
+                        itemTaxSchema: lines[i].itemTaxSchema,
+                        deliveryDate: lines[i].deliveryDate
+                    });
+                }
+
                 let invoiceResource = {
                     documentType: "FA",
                     serie: orders[i].serie,
@@ -23,46 +38,19 @@ async function postSalesInvoice(orders, sellerCompany, buyerCompany) {
                     documentDate: "now",
                     postingDate: "now",
                     buyerCustomerParty: buyerCompany.client_id,
-                    buyerCustomerPartyName: "Sofrio, Lda",
-                    accountingPartyName: "Sofrio, Lda.",
-                    accountingPartyTaxId: "593362462",
-                    exchangeRate: 1,
-                    discount: 0,
-                    loadingCountry: "PT",
-                    unloadingCountry: "PT",
-                    isExternal: false,
-                    isManual: false,
+                    buyerCustomerPartyName: buyerCompany.name,
+                    accountingPartyName: orders[i].accountingPartyName,
+                    accountingPartyTaxId: orders[i].accountingPartyTaxId,
+                    exchangeRate: orders[i].exchangeRate,
+                    discount: orders[i].discount,
+                    loadingCountry: orders[i].loadingCountry,
+                    unloadingCountry: orders[i].unloadingCountry,
+                    isExternal: orders[i].isExternal,
+                    isManual: orders[i].isManual,
                     isSimpleInvoice: false,
-                    isWsCommunicable: false,
-                    deliveryTerm: "V-VIATURA",
-                    documentLines: [{
-                        salesItem: "ARECA",
-                        description: "Palmeira areca em vaso grês",
-                        quantity: 1,
-                        unitPrice: {
-                            "amount": 65,
-                            "baseAmount": 65,
-                            "reportingAmount": 65,
-                            "fractionDigits": 2,
-                            "symbol": "€"
-                        },
-                        unit: "UN",
-                        itemTaxSchema: "IVA-TN",
-                        deliveryDate: "2018-01-04T00:00:00"
-                    }],
-                    WTaxTotal: {
-                        amount: 0,
-                        baseAmount: 0,
-                        reportingAmount: 0,
-                        fractionDigits: 2,
-                        symbol: "€"
-                    },
-                    TotalLiability: {
-                        baseAmount: 0,
-                        reportingAmount: 0,
-                        fractionDigits: 2,
-                        symbol: "€"
-                    }
+                    isWsCommunicable: orders[i].isWsCommunicable,
+                    deliveryTerm: orders[i].deliveryTerm,
+                    documentLines: dl
                 }
             } else {
                 if (rows.length == 1)
@@ -80,4 +68,4 @@ async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
     console.log('purchase invoice');
 }
 
-module.exports = { postPurchasesInvoice };
+module.exports = { postSalesInvoice };
