@@ -17,6 +17,7 @@ var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
 var { getPurchaseOrders } = require('./routes/sales');
 var { getDeliveryOrders } = require('./routes/deliveries');
+var { getPayments } = require('./routes/payment');
 var app = express();
 
 // view engine setup
