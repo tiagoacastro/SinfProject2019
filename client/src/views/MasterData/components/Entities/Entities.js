@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { getMappedEntities } from './requests'
+import { getMappedEntities, deleteMappedEntities } from './requests'
 import { EntitiesMapDialog } from './components';
 
 const Entities = () => {
@@ -17,7 +17,14 @@ const Entities = () => {
     ];
 
     const handleAddClose = () => {
-        setState({ ...state, addDialogOpen: false });
+        console.log("oioioioi")
+        getMappedEntities()
+            .then((response) => {
+                console.log(response)
+                const data = response.data.mappedEntities;
+                setState({ ...state, entitiesData: data, addDialogOpen: false });
+            })
+            .catch((err) => { });
     };
 
     React.useEffect(() => {
@@ -45,8 +52,35 @@ const Entities = () => {
                         }
                     }
                 ]}
+                editable={{
+                    onRowDelete: oldData =>
+                        new Promise((resolve, reject) => {
+                            setTimeout(() => {
+                                {
+                                    deleteMappedEntities(oldData.id)
+                                        .then((response) => {
+                                            getMappedEntities()
+                                                .then((response) => {
+                                                    const data = response.data.mappedEntities;
+                                                    setState({ ...state, entitiesData: data, addDialogOpen: false });
+                                                })
+                                                .catch((err) => { });
+                                        })
+                                        .catch((err) => { });
+                                }
+                                resolve()
+                            }, 1000)
+                        }),
+                }}
             />
-            <EntitiesMapDialog open={state.addDialogOpen} close={handleAddClose} />
+            <EntitiesMapDialog open={state.addDialogOpen} close={handleAddClose} submit={() => {
+                getMappedEntities()
+                .then((response) => {
+                    const data = response.data.mappedEntities;
+                    setState({ ...state, entitiesData: data, addDialogOpen: false });
+                })
+                .catch((err) => { });
+            }} />
         </div >
     );
 }

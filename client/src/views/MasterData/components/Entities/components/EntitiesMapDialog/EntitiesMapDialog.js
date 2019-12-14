@@ -5,7 +5,7 @@ import { getSuppliers, getCostumers, postMappedEntities } from './requests';
 
 const EntitiesMapDialog = props => {
 
-    const { open, close } = props;
+    const { open, close, submit } = props;
 
     const [supplierState, setSupplierState] = React.useState('');
     const [suppliers, setSuppliers] = React.useState([]);
@@ -50,7 +50,9 @@ const EntitiesMapDialog = props => {
     const submitForm = (event) => {
         event.preventDefault();
         if (!(company1State === '' || supplierState === '' || costumerState === '')) {
-            postMappedEntities(costumerState, supplierState);
+            postMappedEntities(costumerState, supplierState)
+                .then((response) => { submit() })
+                .catch((err) => { });
         }
 
         setCompany1State('');

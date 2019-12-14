@@ -1,17 +1,24 @@
 var express = require('express');
 var { sendRequest } = require('./../utils/jasmin');
 const { pool } = require('../config')
-var { getCompanyInformation } = require('../utils/requests')
+const { getCompanyInformation, getMappedProducts, getMappedEntities } = require('../utils/requests')
+const { getNotMappedProducts, getNotMappedEntities } = require('../utils/utils')
 
 var router = express.Router({ mergeParams: true });
 
 router.get('/items', async function (req, res, next) {
     const companyID = req.params.companyID;
-    const companyInfo = await getCompanyInformation(companyID);
-    const tenant = companyInfo.tenant;
-    const organization = companyInfo.organization;
-    const itemKeys = await getSalesItems(companyID, tenant, organization);
-    res.send(itemKeys);
+    try {
+        const companyInfo = await getCompanyInformation(companyID);
+        const tenant = companyInfo.tenant;
+        const organization = companyInfo.organization;
+
+        const itemKeys = await getSalesItems(companyID, tenant, organization);
+        const mappedItems = await getMappedProducts(companyID, tenant, organization);
+        const unmappedProducts = await getNotMappedProducts(companyID, itemKeys, mappedItems.rows);
+
+        res.send(unmappedProducts);
+    } catch (err) { res.sendStatus(400) }
 });
 
 async function getSalesItems(companyID, tenant, organization) {
@@ -25,11 +32,17 @@ async function getSalesItems(companyID, tenant, organization) {
 
 router.get('/costumers', async function (req, res, next) {
     const companyID = req.params.companyID;
-    const companyInfo = await getCompanyInformation(companyID);
-    const tenant = companyInfo.tenant;
-    const organization = companyInfo.organization;
-    const costumerKeys = await getCostumers(companyID, tenant, organization);
-    res.send(costumerKeys);
+    try {
+        const companyInfo = await getCompanyInformation(companyID);
+        const tenant = companyInfo.tenant;
+        const organization = companyInfo.organization;
+
+        const costumerKeys = await getCostumers(companyID, tenant, organization);
+        const mappedCostumers = await getMappedEntities(companyID, tenant, organization);
+        const unmappedCostumers = await getNotMappedEntities(false, costumerKeys, mappedCostumers.rows);
+
+        res.send(unmappedCostumers);
+    } catch (err) { res.sendStatus(400) }
 });
 
 async function getCostumers(companyID, tenant, organization) {

@@ -2,11 +2,11 @@ var express = require('express');
 var router = express.Router();
 var { getClient } = require('../config');
 var { sendRequest } = require('./../utils/jasmin');
-var { getCompanyInformation } = require('../utils/requests')
+var { getCompanyInformation, getMappedProducts } = require('../utils/requests')
 
 router.get('/mapped', async function (req, res, next) {
     const mappedProducts = await getMappedProducts();
-    res.send({ mappedProducts: mappedProducts });
+    res.send({ mappedProducts: mappedProducts.rows });
 });
 
 router.post('/map', async function (req, res, next) {
@@ -21,9 +21,26 @@ router.post('/map', async function (req, res, next) {
     }
 });
 
+router.delete('/:id', async function (req, res, next) {
+    const id = req.params.id;
+
+    try {
+        await unmapProducts(id);
+        res.sendStatus(200);
+    } catch (err) {
+        res.sendStatus(400);
+    }
+
+});
+
 async function mapProducts(reference_1, reference_2) {
     const client = getClient();
     return client.query('INSERT INTO master_data (reference_1,reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, 'Product'])
+}
+
+async function unmapProducts(id) {
+    const client = getClient();
+    return client.query('DELETE from master_data WHERE id=$1', [id])
 }
 
 async function getMappedProducts() {
@@ -34,22 +51,6 @@ async function getMappedProducts() {
                 resolve(result.rows);
             }).catch((err) => { console.error('Error executing SELECT query', err.stack) });
     });
-}
-
-
-async function getNotMappedProducts(companyID, productKeys) {
-    let mappedQueryResult = await getMappedProducts();
-    let unmapped = productKeys;
-    let index;
-    mappedQueryResult.forEach(row => {
-        if (companyID == 1 && (index = productKeys.indexOf(row.reference_1)) != -1) {
-            unmapped.splice(index, 1);
-        } else if (companyID == 2 && (index = productKeys.indexOf(row.reference_2)) != -1) {
-            unmapped.splice(index, 1);
-        }
-    })
-
-    return unmapped;
 }
 
 module.exports = router;

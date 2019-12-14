@@ -5,7 +5,7 @@ import { getSalesItems, getPurchaseItems, postMappedProducts } from './requests'
 
 const ProductMapDialog = props => {
 
-    const { open, close } = props;
+    const { open, close, submit } = props;
 
     const [salesState, setSalesState] = React.useState('');
     const [salesItems, setSalesItems] = React.useState([]);
@@ -65,10 +65,17 @@ const ProductMapDialog = props => {
 
     const submitForm = (event) => {
         event.preventDefault();
+        let pos1;
+        let pos2;
+
         if (!(company1State === '' || company2State === '' || salesState === '' || purchaseState === '')) {
             if (company1State === '1') {
-                console.log(postMappedProducts(salesState, purchaseState));
-            } else postMappedProducts(purchaseState, salesState);
+                pos1 = salesState
+                pos2 = purchaseState
+            }
+            postMappedProducts(pos1, pos2)
+                .then(() => { submit(); })
+                .catch((err) => { });
         }
 
         setCompany1State('');
