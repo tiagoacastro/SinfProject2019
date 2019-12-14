@@ -7,7 +7,6 @@ var router = express.Router({ mergeParams: true });
 
 router.get('/items', async function (req, res, next) {
     const companyID = req.params.companyID;
-    console.log(req.params)
     const companyInfo = await getCompanyInformation(companyID);
     const tenant = companyInfo.tenant;
     const organization = companyInfo.organization;
@@ -23,6 +22,25 @@ async function getSalesItems(companyID, tenant, organization) {
             }).catch((err) => { console.log(err) });
     });
 };
+
+router.get('/costumers', async function (req, res, next) {
+    const companyID = req.params.companyID;
+    const companyInfo = await getCompanyInformation(companyID);
+    const tenant = companyInfo.tenant;
+    const organization = companyInfo.organization;
+    const costumerKeys = await getCostumers(companyID, tenant, organization);
+    res.send(costumerKeys);
+});
+
+async function getCostumers(companyID, tenant, organization) {
+    return new Promise(function (resolve, reject) {
+        sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/salesCore/customerParties', parseInt(companyID))
+            .then(resJasmin => {
+                resolve(resJasmin.data.map(a => a.partyKey));
+            }).catch((err) => { console.log(err) });
+    });
+};
+
 
 router.get('/', function (req, res, next) {
     const { id } = req.params;

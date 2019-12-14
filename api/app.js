@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var productsRouter = require("./routes/products");
 var salesRouter = require("./routes/sales");
 var purchasesRouter = require("./routes/purchases");
+var entitiesRouter = require("./routes/entities");
 var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
 var { getPurchaseOrders } = require('./routes/sales');
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/products', productsRouter);
+app.use('/entities', entitiesRouter);
 app.use('/company/:companyID/sales', salesRouter);
 app.use('/company/:companyID/purchases', purchasesRouter);
 
