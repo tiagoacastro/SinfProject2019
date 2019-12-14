@@ -78,7 +78,6 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 for (let i = 0; i < lines.length; i++) {
                     let res = await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [lines[i].purchasesItem]);
                     if (res.rows.length != 1) {
-                        console.log(lines[i].purchasesItem);
                         return console.error('Error getting master data for product');
                     } else {
                         let item;
@@ -97,10 +96,22 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                     }
                 }
 
+                let ans = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE category = $1', ['Customer_Entity']);
+                let party;
+                if (ans.rows.length != 1) {
+                    return console.error('Error getting master data for customer entity');
+                }
+
+                if (buyerCompany.id == 1) {
+                    party = ans.rows[0].reference_1;
+                } else {
+                    party = ans.rows[0].reference_2;
+                }
+
                 let orderResource = {
                     documentType: "ECL",
                     serie: "2019",
-                    buyerCustomerParty: "0003", //ENTITY
+                    buyerCustomerParty: party,
                     documentDate: "now",
                     discount: orders[i].discount,
                     currency: orders[i].currency,
@@ -108,7 +119,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                     paymentTerm: orders[i].paymentTerm,
                     deliveryTerm: orders[i].deliveryTerm,
                     salesChannel: "ONLINE",
-                    company: "SINF", //KEY
+                    company: sellerCompany.c_key,
                     remarks: "order",
                     unloadingPoint: orders[i].unloadingPoint,
                     unloadingStreetName: orders[i].unloadingStreetName,
