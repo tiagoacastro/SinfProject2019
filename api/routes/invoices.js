@@ -1,67 +1,81 @@
 var { sendRequest } = require('./../utils/jasmin');
+const { pool } = require('../config')
 
-async function postSalesInvoice(orders, sellerCompany, buyerCompany) {
-    console.log('sale invoice');
+async function postSalesInvoice(order, sellerCompany, buyerCompany) {
+    let deliveryOrderId = order.id;
+    let result = await pool.query('SELECT document_2 FROM private_data WHERE id_company = $1 AND document_1 = $2', [sellerCompany.id, deliveryOrderId]);
 
-    for (let i = 0; i < orders.length; i++) {
-        let deliveryOrderId = orders[i].id;
-        await pool.query('SELECT document_2 FROM private_data WHERE id_company = $1 AND document_1 = $2', [sellerCompany.id, deliveryOrderId], async function(error, result) {
-            if (error) {
-                return console.error('Error executing SELECT query', error.stack)
-            }
+    let rows = result.rows;
+    if (rows.length == 0) {
+        let lines = order.documentLines
+        let dl = [];
 
-            let rows = result.rows;
-            if (rows.length == 0) {
-                let lines = orders[i].documentLines
-                let dl = [];
+        for (let i = 0; i < lines.length; i++) {
+            dl.push({
+                salesItem: lines[i].item,
+                description: lines[i].description,
+                quantity: lines[i].quantity,
+                unitPrice: lines[i].unitCost,
+                unit: lines[i].unit,
+                itemTaxSchema: lines[i].itemTaxSchema,
+                deliveryDate: lines[i].deliveryDate
+            });
+        }
 
-                for (let i = 0; i < lines.length; i++) {
-                    dl.push({
-                        salesItem: lines[i].item,
-                        description: lines[i].description,
-                        quantity: lines[i].quantity,
-                        unitPrice: lines[i].unitCost,
-                        unit: lines[i].unit,
-                        itemTaxSchema: lines[i].itemTaxSchema,
-                        deliveryDate: lines[i].deliveryDate
-                    });
-                }
+        let ans = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE category = $1', ['Customer_Entity']);
+        let party;
+        if (ans.rows.length != 1) {
+            return console.error('Error getting master data for customer entity');
+        }
 
-                let invoiceResource = {
-                    documentType: "FA",
-                    serie: orders[i].serie,
-                    seriesNumber: orders[i].documentLines[0].seriesNumber,
-                    company: orders[i].company,
-                    paymentTerm: orders[i].paymentTerm,
-                    paymentMethod: orders[i].paymentMethod,
-                    currency: orders[i].currency,
-                    documentDate: "now",
-                    postingDate: "now",
-                    buyerCustomerParty: buyerCompany.client_id,
-                    buyerCustomerPartyName: buyerCompany.name,
-                    accountingPartyName: orders[i].accountingPartyName,
-                    accountingPartyTaxId: orders[i].accountingPartyTaxId,
-                    exchangeRate: orders[i].exchangeRate,
-                    discount: orders[i].discount,
-                    loadingCountry: orders[i].loadingCountry,
-                    unloadingCountry: orders[i].unloadingCountry,
-                    isExternal: orders[i].isExternal,
-                    isManual: orders[i].isManual,
-                    isSimpleInvoice: false,
-                    isWsCommunicable: orders[i].isWsCommunicable,
-                    deliveryTerm: orders[i].deliveryTerm,
-                    documentLines: dl
-                }
-            } else {
-                if (rows.length == 1)
-                    console.log(deliveryOrderId + ' - Already exists with id on company ' + sellerCompany.id + ' being: ' + rows[0])
-                else
-                    console.log(deliveryOrderId + ' - Error with order check')
-            }
-        });
+        if (buyerCompany.id == 1) {
+            party = ans.rows[0].reference_1;
+        } else {
+            party = ans.rows[0].reference_2;
+        }
+
+        let invoiceResource = {
+            documentType: "FA",
+            serie: "2019",
+            seriesNumber: order.documentLines[0].seriesNumber,
+            company: order.company,
+            paymentTerm: order.paymentTerm,
+            paymentMethod: order.paymentMethod,
+            currency: order.currency,
+            documentDate: "now",
+            postingDate: "now",
+            buyerCustomerParty: party,
+            buyerCustomerPartyName: buyerCompany.name,
+            exchangeRate: order.exchangeRate,
+            discount: order.discount,
+            loadingCountry: order.loadingCountry,
+            unloadingCountry: order.unloadingCountry,
+            isExternal: order.isExternal,
+            isManual: order.isManual,
+            isSimpleInvoice: false,
+            isWsCommunicable: order.isWsCommunicable,
+            deliveryTerm: order.deliveryTerm,
+            documentLines: dl
+        }
+
+        try {
+            let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices`, sellerCompany.id, invoiceResource);
+            let invoiceId = res.data;
+
+            await pool.query('INSERT INTO private_data (id_company, document_1, document_2) VALUES ($1, $2, $3)', [sellerCompany.id, deliveryOrderId, invoiceId])
+            console.log('delivery order for invoice: ' + deliveryOrderId + ' - Doesnt exist, invoice was created on company ' + sellerCompany.id + ' with id: ' + invoiceId)
+        } catch (err) {
+            console.log(err);
+        }
+    } else {
+        if (rows.length == 1)
+            console.log('delivery order for invoice: ' + deliveryOrderId + ' - Already exists with id on company ' + sellerCompany.id + ' being: ' + rows[0].document_2)
+        else
+            console.log('delivery order for invoice: ' + deliveryOrderId + ' - Error with order check')
     }
 
-    postPurchasesInvoice(orders, sellerCompany, buyerCompany);
+
+    await postPurchasesInvoice(order, sellerCompany, buyerCompany);
 }
 
 async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
