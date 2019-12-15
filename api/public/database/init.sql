@@ -1,15 +1,16 @@
 DROP TABLE IF EXISTS private_data;
+DROP TABLE IF EXISTS logs;
 DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS master_data;
 DROP TABLE IF EXISTS processes_events;
 DROP TABLE IF EXISTS processes;
 DROP TABLE IF EXISTS events;
-DROP TABLE IF EXISTS logs;
 DROP TYPE IF EXISTS categories;
 
 CREATE TABLE companies (
   id            SERIAL PRIMARY KEY,
   name          TEXT NOT NULL UNIQUE,
+  c_key         TEXT NOT NULL UNIQUE,
   client_id     TEXT NOT NULL UNIQUE,
   secret_id     TEXT NOT NULL UNIQUE,
   tenant        TEXT NOT NULL UNIQUE,
@@ -20,15 +21,15 @@ CREATE TABLE private_data (
   id            SERIAL PRIMARY KEY,
   id_company    INTEGER REFERENCES companies (id) ON UPDATE CASCADE,
   document_1    TEXT NOT NULL UNIQUE,
-  document_2    TEXT NOT NULL UNIQUE,
+  document_2    TEXT NOT NULL UNIQUE
 );
 
-CREATE TYPE categories AS ENUM('Product', 'Document', 'Entity');
+CREATE TYPE categories AS ENUM('Product', 'Document', 'Customer_Entity', 'Supplier_Entity');
 
 CREATE TABLE master_data (
   id            SERIAL PRIMARY KEY,
-  reference_1   TEXT NOT NULL UNIQUE,
-  reference_2   TEXT NOT NULL UNIQUE,
+  reference_1   TEXT NOT NULL,
+  reference_2   TEXT NOT NULL,
   category      categories NOT NULL
 );
 

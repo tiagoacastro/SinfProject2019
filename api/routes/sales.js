@@ -6,7 +6,7 @@ const { getNotMappedProducts, getNotMappedEntities } = require('../utils/utils')
 
 var router = express.Router({ mergeParams: true });
 
-router.get('/items', async function (req, res, next) {
+router.get('/items', async function(req, res, next) {
     const companyID = req.params.companyID;
     try {
         const companyInfo = await getCompanyInformation(companyID);
@@ -22,7 +22,7 @@ router.get('/items', async function (req, res, next) {
 });
 
 async function getSalesItems(companyID, tenant, organization) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/salesCore/salesItems', parseInt(companyID))
             .then(resJasmin => {
                 resolve(resJasmin.data.map(a => a.itemKey));
@@ -30,7 +30,7 @@ async function getSalesItems(companyID, tenant, organization) {
     });
 };
 
-router.get('/costumers', async function (req, res, next) {
+router.get('/costumers', async function(req, res, next) {
     const companyID = req.params.companyID;
     try {
         const companyInfo = await getCompanyInformation(companyID);
@@ -46,7 +46,7 @@ router.get('/costumers', async function (req, res, next) {
 });
 
 async function getCostumers(companyID, tenant, organization) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/salesCore/customerParties', parseInt(companyID))
             .then(resJasmin => {
                 resolve(resJasmin.data.map(a => a.partyKey));
@@ -55,7 +55,7 @@ async function getCostumers(companyID, tenant, organization) {
 };
 
 
-router.get('/', function (req, res, next) {
+router.get('/', function(req, res, next) {
     const { id } = req.params;
     var data = sendRequest('get', 'https://my.jasminsoftware.com/api/224814/224814-0001/sales/orders', 1);
     console.log(data);
@@ -65,41 +65,53 @@ router.get('/', function (req, res, next) {
 async function postSalesOrder(orders, sellerCompany, buyerCompany) {
     for (let i = 0; i < orders.length; i++) {
         let purchaseOrderId = orders[i].documentLines[0].orderId;
-        await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [purchaseOrderId], async function (error, result) {
+        pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [purchaseOrderId], async function(error, result) {
             if (error) {
                 return console.error('Error executing SELECT query', error.stack)
             }
+
             let rows = result.rows;
-            let lines = orders[i].documentLines;
-
             if (rows.length == 0) {
+                let lines = orders[i].documentLines;
                 let dl = [];
-                for (let i = 0; i < lines.length; i++) {
-                    await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [lines[i].purchasesItem], async function (error, result) {
-                        if (error) {
-                            return console.error('Error executing SELECT query', error.stack)
-                        } else {
-                            if (result.rows.length != 1) {
-                                console.log(lines[i].purchasesItem);
-                                return console.error('Error getting master data for product', error.stack)
-                            } else {
-                                dl.push({
-                                    salesItem: result.rows[0],
-                                    quantity: lines[i].quantity,
-                                    unit: lines[i].unit,
-                                    itemTaxSchema: lines[i].itemTaxSchema,
-                                    unitPrice: lines[i].unitPrice
-                                });
-                            }
-                        }
-                    });
 
-                };
+                for (let i = 0; i < lines.length; i++) {
+                    let res = await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [lines[i].purchasesItem]);
+                    if (res.rows.length != 1) {
+                        return console.error('Error getting master data for product');
+                    } else {
+                        let item;
+                        if (sellerCompany.id == 1) {
+                            item = res.rows[0].reference_1;
+                        } else {
+                            item = res.rows[0].reference_2;
+                        }
+                        dl[i] = {
+                            salesItem: item,
+                            quantity: lines[i].quantity,
+                            unit: lines[i].unit,
+                            itemTaxSchema: lines[i].itemTaxSchema,
+                            unitPrice: lines[i].unitPrice
+                        };
+                    }
+                }
+
+                let ans = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE category = $1', ['Customer_Entity']);
+                let party;
+                if (ans.rows.length != 1) {
+                    return console.error('Error getting master data for customer entity');
+                }
+
+                if (buyerCompany.id == 1) {
+                    party = ans.rows[0].reference_1;
+                } else {
+                    party = ans.rows[0].reference_2;
+                }
 
                 let orderResource = {
-                    documentType: orders[i].documentType,
-                    serie: orders[i].serie,
-                    buyerCustomerParty: buyerCompany.client_id,
+                    documentType: "ECL",
+                    serie: "2019",
+                    buyerCustomerParty: party,
                     documentDate: "now",
                     discount: orders[i].discount,
                     currency: orders[i].currency,
@@ -107,7 +119,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                     paymentTerm: orders[i].paymentTerm,
                     deliveryTerm: orders[i].deliveryTerm,
                     salesChannel: "ONLINE",
-                    company: orders[i].company,
+                    company: sellerCompany.c_key,
                     remarks: "order",
                     unloadingPoint: orders[i].unloadingPoint,
                     unloadingStreetName: orders[i].unloadingStreetName,
@@ -116,7 +128,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                     unloadingCityName: orders[i].unloadingCityName,
                     unloadingCountry: orders[i].unloadingCountry,
                     documentLines: dl
-                }
+                };
 
                 try {
                     let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/sales/orders`, sellerCompany.id, orderResource);
@@ -131,7 +143,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                         reference_2 = purchaseOrderId;
                     }
 
-                    await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, "Document"], (error, result) => {
+                    pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, "Document"], (error, result) => {
                         if (error) {
                             return console.error('Error executing INSERT query', error.stack)
                         } else {

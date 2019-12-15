@@ -34,17 +34,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/products', productsRouter);
 app.use('/entities', entitiesRouter);
-app.use('/company/:companyID/sales', salesRouter);
+//app.use('/company/:companyID/sales', salesRouter);
 app.use('/company/:companyID/purchases', purchasesRouter);
 app.use('/processes', processesRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -62,12 +62,12 @@ async function testDB() {
     const client = await connect();
 
     //example query insert
-    /*await client.query('INSERT INTO processes (name) VALUES ($1)', ['test'], (error, result) => {
+    await client.query('INSERT INTO processes (name) VALUES ($1)', ['test'], (error, result) => {
         if (error) {
             return console.error('Error executing INSERT query', error.stack)
         }
         console.log('added')
-    });*/
+    });
 
     //example query select
     await client.query('SELECT id, name FROM processes', (error, result) => {
@@ -78,12 +78,12 @@ async function testDB() {
     });
 
     //example query delete
-    /*await client.query('DELETE FROM processes', (error, result) => {
+    await client.query('DELETE FROM processes', (error, result) => {
         if (error) {
             return console.error('Error executing DELETE query', error.stack)
         }
         console.log('deleted')
-    });*/
+    });
 }
 
 var companies;
@@ -105,13 +105,14 @@ async function initialize() {
 //------------code-----------
 //---------------------------
 
-testDB();
+//testDB();
 
 initialize();
 
-setTimeout(function () {
+setTimeout(function() {
     //getPurchaseOrders(companies[0], companies[1]);
     //getDeliveryOrders(companies[0], companies[1]);
+    //getPayments(companies[0], companies[1]);
 }, 2000);
 
 

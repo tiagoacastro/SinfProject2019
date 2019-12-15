@@ -5,66 +5,52 @@ const { pool } = require('../config')
 async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
     for (let i = 0; i < orders.length; i++) {
         let deliveryOrderId = orders[i].id;
-        await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + ' = $1', [deliveryOrderId], async function(error, result) {
-            if (error) {
-                return console.error('Error executing SELECT query', error.stack)
-            }
+        let res = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + ' = $1', [deliveryOrderId])
+        if (res.rows.length == 0) {
 
-            let rows = result.rows;
-            if (rows.length == 0) {
+                let res2 = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + '= $1', [orders[i].documentLines[0].sourceDocId])
 
-                await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + '= $1', [orders[i].documentLines[0].sourceDocId], async function(error, result2) {
-                    if (error) {
-                        return console.error('Error executing SELECT query', error.stack)
-                    }
+                    if (res2.rows.length != 0) {
 
-                    let rows2 = result2.rows;
-
-                    if (rows2.length != 0) {
-
-                        let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders/${rows2[0].reference_2}`, buyerCompany.id);
+                        let result = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders/${res2.rows[0].reference_2}`, buyerCompany.id);
 
                         let orderBody = [];
-                        for(var j=0; j < order[i].documentLines.length; j++) {
+                        for (var j = 0; j < orders[i].documentLines.length; j++) {
 
                             orderBody.push({
-                                SourceDocKey: res.data.naturalKey,
+                                SourceDocKey: result.data.naturalKey,
                                 SourceDocLineNumber: orders[i].documentLines[j].sourceDocLine,
                                 quantity: orders[i].documentLines[j].quantity
                             });
                         }
-                       
+
                         try {
-                            let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/goodsReceipt/processOrders/WINEWARD`, buyerCompany.id, orderBody);
+                            let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/goodsReceipt/processOrders/${buyerCompany.c_key}`, buyerCompany.id, orderBody);
                             let goodsReceiptId = res.data;
 
                             await pool.query('INSERT INTO master_data (reference_' + sellerCompany.id + ', reference_' + buyerCompany.id + ', category) VALUES ($1, $2, $3)', [deliveryOrderId, goodsReceiptId, "Document"], (error, result) => {
                                 if (error) {
                                     return console.error('Error executing INSERT query', error.stack)
                                 } else {
-                                    console.log(deliveryOrderId + ' - Doesnt exist, sales order was created on company 1 with id: ' + goodsReceiptId)
+                                    console.log(deliveryOrderId + ' - Doesnt exist, goods receipt was created on company 1 with id: ' + goodsReceiptId)
                                 }
                             });
                         } catch (err) {
                             console.log(err);
                         }
                     } else {
-                        if (rows2.length == 0)
+                        if (res2.rows.length == 0)
                             console.log("No purchase order was found with the delivery order source sales order")
                         else
                             console.log(deliveryOrderId + ' - Error with order check')
                     }
-
-
-                })
             } else {
-                if (rows.length == 1)
-                    console.log(deliveryOrderId + ' - Already exists with id on company 1 being: ' + rows[0])
+                if (res.rows.length == 1)
+                    console.log(deliveryOrderId + ' - Already exists with id on company 1 being: ' + res.rows[0])
                 else
                     console.log(deliveryOrderId + ' - Error with order check')
             }
-        });
-    }
+        }
 }
 
 async function getDeliveryOrders(sellerCompany, buyerCompany) {
