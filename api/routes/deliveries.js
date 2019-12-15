@@ -25,7 +25,7 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
                         }
 
                         try {
-                            let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/goodsReceipt/processOrders/WINEWARD`, buyerCompany.id, orderBody);
+                            let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/goodsReceipt/processOrders/${buyerCompany.c_key}`, buyerCompany.id, orderBody);
                             let goodsReceiptId = res.data;
 
                             await pool.query('INSERT INTO master_data (reference_' + sellerCompany.id + ', reference_' + buyerCompany.id + ', category) VALUES ($1, $2, $3)', [deliveryOrderId, goodsReceiptId, "Document"], (error, result) => {
