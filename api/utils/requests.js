@@ -25,7 +25,7 @@ async function getMappedProducts() {
 
 async function getMappedEntities() {
     const client = getClient();
-    return client.query('SELECT id, reference_1, reference_2 FROM master_data where category=\'Entity\'');
+    return client.query('SELECT * FROM master_data where category::text LIKE \'%Entity\'');
 }
 
 module.exports = { getCompanyInformation, getCompaniesInformation, getMappedProducts, getMappedEntities };
