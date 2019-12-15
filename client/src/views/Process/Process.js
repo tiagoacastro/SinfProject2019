@@ -44,10 +44,10 @@ const Process = () => {
         getProcesses()
             .then((response) => {
                 const data = response.data.processes;
-                //setState({ ...state, processes: data })
+                setState({ ...state, processes: data })
             })
             .catch((err) => { });
-    }, []);
+    }, [state]);
 
     return (
         <div className={classes.root}>
