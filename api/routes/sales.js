@@ -130,8 +130,8 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
             try {
                 let res = await sendRequest('post', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/sales/orders`, sellerCompany.id, orderResource);
                 let saleOrderId = res.data;
-
                 let reference_1, reference_2;
+
                 if (sellerCompany.id == 1) {
                     reference_1 = saleOrderId;
                     reference_2 = purchaseOrderId;

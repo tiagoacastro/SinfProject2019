@@ -111,7 +111,7 @@ initialize();
 
 setTimeout(function() {
     //getPurchaseOrders(companies[0], companies[1]);
-    //getDeliveryOrders(companies[0], companies[1]);
+    getDeliveryOrders(companies[0], companies[1]);
     //getPayments(companies[0], companies[1]);
 }, 2000);
 
