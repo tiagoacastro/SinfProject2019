@@ -54,7 +54,7 @@ async function postSalesInvoice(orders, sellerCompany, buyerCompany) {
                 }
             } else {
                 if (rows.length == 1)
-                    console.log(deliveryOrderId + ' - Already exists with id on company 1 being: ' + rows[0])
+                    console.log(deliveryOrderId + ' - Already exists with id on company ' + sellerCompany.id + ' being: ' + rows[0])
                 else
                     console.log(deliveryOrderId + ' - Error with order check')
             }
