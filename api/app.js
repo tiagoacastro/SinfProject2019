@@ -109,10 +109,10 @@ async function initialize() {
 
 initialize();
 
-setTimeout(function() {
-    //getPurchaseOrders(companies[0], companies[1]);
-    //getDeliveryOrders(companies[0], companies[1]);
-    //getPayments(companies[0], companies[1]);
+setTimeout(async function() {
+    //await getPurchaseOrders(companies[0], companies[1]);
+    //await getDeliveryOrders(companies[0], companies[1]);
+    //await getPayments(companies[0], companies[1]);
 }, 2000);
 
 
