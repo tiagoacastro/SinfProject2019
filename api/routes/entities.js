@@ -12,6 +12,7 @@ router.post('/map', async function (req, res, next) {
     const reference_1 = req.body.reference_1;
     const reference_2 = req.body.reference_2;
     const category = req.body.category;
+    console.log(reference_1, reference_2, category)
 
     try {
         await mapEnteties(category, reference_1, reference_2);
@@ -37,7 +38,7 @@ router.delete('/:id', async function (req, res, next) {
 
 async function mapEnteties(category, reference_1, reference_2) {
     const client = getClient();
-    return client.query('INSERT INTO master_data (reference_1, reference_2,category)  values($1, $2, $3)', [reference_1, reference_2, category]);
+    return client.query('UPDATE master_data set reference_1=$1, reference_2=$2 where category=$3', [reference_1, reference_2, category]);
 }
 
 async function unmapEnteties(id) {

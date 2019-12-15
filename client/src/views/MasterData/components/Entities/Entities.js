@@ -1,7 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { EntitiesMapDialog } from './components';
-import { Select, MenuItem } from '@material-ui/core';
+import { Grid, Divider, Box, Button, TextField, MenuItem, NativeSelect, FormControl } from '@material-ui/core';
+import { Dialog, DialogContent, DialogActions, DialogTitle, Typography } from '@material-ui/core';
 import {
     getMappedEntities,
     deleteMappedEntities,
@@ -13,66 +13,55 @@ import {
 const Entities = () => {
 
     const [entitiesData, setEntitiesData] = React.useState([]);
-
-    const [columns, setColumns] = React.useState([
-        { title: 'Entity Type', field: 'category', editable: 'never' },
-        {
-            title: 'REFs to Grapevine', field: 'reference_1',
-            editComponent: props => {
-                return <Select value={props.value} onChange={e => props.onChange(e.target.value)}>
-                    {
-                        props.rowData.category === 'Customer_Entity' ? state.ref_1CostumerOptions.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        )) : state.ref_1SupplierOptions.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))
-                    }
-                </Select>
-            }
-        },
-        {
-            title: 'REFs to Wineward', field: 'reference_2',
-            editComponent: props => {
-                return <Select value={props.value} onChange={e => props.onChange(e.target.value)}>
-                    {
-                        props.rowData.category === 'Customer_Entity' ? state.ref_1CostumerOptions.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        )) : state.ref_1SupplierOptions.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))
-                    }
-                </Select>
-            }
-        }])
-
     const [state, setState] = React.useState({
-        coisa: [],
+        addDialogOpen: false,
+        selectedRow: [],
         ref_1CostumerOptions: [],
         ref_1SupplierOptions: [],
         ref_2CostumerOptions: [],
         ref_2SupplierOptions: [],
+        references1: [],
+        reference1State: '',
+        references2: [],
+        reference2State: ''
     });
 
-    const handleAddClose = () => {
-        getMappedEntities()
-            .then((response) => {
-                console.log(response)
-                const data = response.data.mappedEntities;
-                setEntitiesData(data);
-            })
-            .catch((err) => { });
+    const columns = [
+        {
+            title: 'Entity Type', field: 'category', editable: 'never',
+            lookup:
+                { 'Customer_Entity': 'Customer', 'Supplier_Entity': 'Supplier', },
+        },
+        { title: 'REFs to Grapevine', field: 'reference_1', },
+        { title: 'REFs to Wineward', field: 'reference_2', }
+    ]
+
+    const handleRef1Change = event => {
+        setState({ ...state, reference1State: event.target.value });
     };
 
-    React.useEffect(() => {
+    const handleRef2Change = event => {
+        setState({ ...state, reference2State: event.target.value });
+    };
 
+    const getOptions = async (category) => {
+        let options = {};
+
+        if (category === 'Customer_Entity') {
+            options = await getCustomerReferences();
+        }
+        else {
+            options = await getSupplierReferences();
+        }
+
+        return options;
+    }
+
+    const handleAddClose = () => {
+        setState({ ...state, addDialogOpen: false })
+    }
+
+    const mappedEntitites = () => {
         getMappedEntities()
             .then((response) => {
                 const data = response.data.mappedEntities;
@@ -88,21 +77,20 @@ const Entities = () => {
 
             })
             .catch((err) => { });
+    }
 
-        getCustomerReferences()
-            .then((response) => {
-                const ref_1CostumerOptions = response.options_1;
-                const ref_2CostumerOptions = response.options_2;
-                setState({ ...state, ref_1CostumerOptions: ref_1CostumerOptions, ref_2CostumerOptions: ref_2CostumerOptions });
-            }).catch((err) => { });
+    React.useEffect(() => {
 
-        getSupplierReferences().then((response) => {
-            const ref_1SupplierOptions = response.options_1;
-            const ref_2SupplierOptions = response.options_2;
-            setState({ ...state, ref_1SupplierOptions, ref_2SupplierOptions });
-        }).catch((err) => { });
+        mappedEntitites();
 
     }, []);
+
+    const submit = event => {
+        event.preventDefault();
+        postMappedEntities(state.selectedRow.category, state.reference1State, state.reference2State)
+            .then(mappedEntitites)
+            .catch((err) => { });
+    }
 
     return (
         <div>
@@ -110,25 +98,18 @@ const Entities = () => {
                 title="Entities"
                 columns={columns}
                 data={entitiesData}
+                actions={[
+                    {
+                        icon: 'edit',
+                        tooltip: 'Edit',
+                        onClick: async (event, rowData) => {
+                            setState({ ...state, addDialogOpen: true, selectedRow: rowData });
+                            const options = await getOptions(rowData.category);
+                            setState({ ...state, addDialogOpen: true, selectedRow: rowData, references1: options.options_1, references2: options.options_2 });
+                        }
+                    }
+                ]}
                 editable={{
-                    onRowUpdate: (newData, oldData) =>
-                        new Promise((resolve, reject) => {
-                            setTimeout(() => {
-                                {
-                                    const data = entitiesData;
-                                    const index = data.indexOf(oldData);
-                                    data[index] = newData;
-                                    setEntitiesData(data, () => resolve());
-
-                                    postMappedEntities(newData.category, newData.reference_1, newData.reference_2)
-                                        .then((response) => { })
-                                        .catch((err) => { });
-
-                                    resolve();
-                                }
-                            }, 1000);
-                        }),
-
                     onRowDelete: oldData =>
                         new Promise((resolve, reject) => {
                             setTimeout(() => {
@@ -148,17 +129,73 @@ const Entities = () => {
                         }),
                 }}
             />
-            <EntitiesMapDialog open={state.addDialogOpen} close={handleAddClose} submit={() => {
-                getMappedEntities()
-                    .then((response) => {
-                        const data = response.data.mappedEntities;
-                        setEntitiesData(data);
-                    })
-                    .catch((err) => { });
-            }} />
+            <Dialog
+                fullWidth
+                open={state.addDialogOpen}
+                aria-labelledby="draggable-dialog-title"
+                onClose={handleAddClose}
+            >
+                <DialogTitle id="draggable-dialog-title">Map Entities</DialogTitle>
+                <Divider />
+                <DialogContent>
+                    <form onSubmit={submit}>
+                        <Box mt={3} mb={6}>
+                            <Grid container justify="center">
+                                <Grid container justify="center" item xs={12} py={1}>
+                                    <Grid container>
+                                        <Box mb={1}><Typography>Entity Type</Typography></Box>
+                                    </Grid>
+                                    <Grid container justify="center">
+                                        <FormControl disabled>
+                                            <NativeSelect value={state.selectedRow.category} >
+                                                <option value={state.selectedRow.category}>{state.selectedRow.category}</option>
+                                            </NativeSelect>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+                                <Grid container justify="center" item xs={6} py={1}>
+                                    <Grid container justify="center">
+                                        <Box mt={4} mb={1}><Typography>REF to GrapeVine</Typography></Box>
+                                    </Grid>
+                                    <Grid container justify="center">
+                                        <TextField required id="select-company-A" select label="Select" value={state.reference1State} onChange={handleRef1Change} helperText="Please select a reference">
+                                            {
+                                                state.references1.map(option => (
+                                                    <MenuItem key={option} value={option}>
+                                                        {option}
+                                                    </MenuItem>
+                                                ))
+                                            }
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                                <Grid container justify="center" item xs={6} py={1}>
+                                    <Grid container justify="center">
+                                        <Box mt={4} mb={1}><Typography>REF to Wineward</Typography></Box>
+                                    </Grid>
+                                    <Grid container justify="center">
+                                        <TextField required id="select-company-A" select label="Select" value={state.reference2State} onChange={handleRef2Change} helperText="Please select a reference">
+                                            {state.references2.map(option => (
+                                                <MenuItem key={option} value={option}>
+                                                    {option}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                        <Divider />
+                        <DialogActions>
+                            <Button onClick={handleAddClose}>Cancel</Button>
+                            <Button onClick={handleAddClose} type="submit">Save</Button>
+                        </DialogActions >
+                    </form>
+                </DialogContent>
+            </Dialog >
+
         </div >
     );
 }
-
 
 export default Entities;

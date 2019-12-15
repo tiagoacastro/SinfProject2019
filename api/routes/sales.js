@@ -6,7 +6,7 @@ const { getNotMappedProducts, getNotMappedEntities } = require('../utils/utils')
 
 var router = express.Router({ mergeParams: true });
 
-router.get('/items', async function(req, res, next) {
+router.get('/items', async function (req, res, next) {
     const companyID = req.params.companyID;
     try {
         const companyInfo = await getCompanyInformation(companyID);
@@ -22,7 +22,7 @@ router.get('/items', async function(req, res, next) {
 });
 
 async function getSalesItems(companyID, tenant, organization) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/salesCore/salesItems', parseInt(companyID))
             .then(resJasmin => {
                 resolve(resJasmin.data.map(a => a.itemKey));
@@ -30,7 +30,7 @@ async function getSalesItems(companyID, tenant, organization) {
     });
 };
 
-router.get('/costumers', async function(req, res, next) {
+router.get('/costumers', async function (req, res, next) {
     const companyID = req.params.companyID;
     try {
         const companyInfo = await getCompanyInformation(companyID);
@@ -42,11 +42,11 @@ router.get('/costumers', async function(req, res, next) {
         const unmappedCostumers = await getNotMappedEntities(false, costumerKeys, mappedCostumers.rows);
 
         res.send(unmappedCostumers);
-    } catch (err) { res.sendStatus(400) }
+    } catch (err) { cosole.log(err); res.sendStatus(400) }
 });
 
 async function getCostumers(companyID, tenant, organization) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/salesCore/customerParties', parseInt(companyID))
             .then(resJasmin => {
                 resolve(resJasmin.data.map(a => a.partyKey));
@@ -55,7 +55,7 @@ async function getCostumers(companyID, tenant, organization) {
 };
 
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     const { id } = req.params;
     var data = sendRequest('get', 'https://my.jasminsoftware.com/api/224814/224814-0001/sales/orders', 1);
     console.log(data);
