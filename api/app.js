@@ -9,7 +9,7 @@ const { pool, connect, getClient } = require('./config')
 
 var indexRouter = require('./routes/index');
 var productsRouter = require("./routes/products");
-var salesRouter = require("./routes/sales");
+//var salesRouter = require("./routes/sales");
 var purchasesRouter = require("./routes/purchases");
 var entitiesRouter = require("./routes/entities");
 var processesRouter = require("./routes/processes");
@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/products', productsRouter);
 app.use('/entities', entitiesRouter);
-app.use('/company/:companyID/sales', salesRouter);
+//app.use('/company/:companyID/sales', salesRouter);
 app.use('/company/:companyID/purchases', purchasesRouter);
 app.use('/processes', processesRouter);
 
@@ -91,13 +91,9 @@ var companies;
 async function initialize() {
     const client = await connect();
 
-    client.query('SELECT * FROM companies', (error, result) => {
-        if (error) {
-            console.error('Error executing SELECT query', error.stack)
-        }
-        companies = result.rows;
-        getAcessToken(companies[0], companies[1]);
-    });
+    let result = await client.query('SELECT * FROM companies');
+    companies = result.rows;
+    await getAcessToken(companies[0], companies[1]);
 }
 
 
@@ -107,12 +103,12 @@ async function initialize() {
 
 //testDB();
 
-initialize();
+initialize().then(
+    setTimeout(async function() {
+        //await getPurchaseOrders(companies[0], companies[1]);
+        //await getDeliveryOrders(companies[0], companies[1]);
+        //await getPayments(companies[0], companies[1]);
+    }, 2000));
 
-setTimeout(async function() {
-    //await getPurchaseOrders(companies[0], companies[1]);
-    //await getDeliveryOrders(companies[0], companies[1]);
-    //await getPayments(companies[0], companies[1]);
-}, 2000);
 
 module.exports = app;
