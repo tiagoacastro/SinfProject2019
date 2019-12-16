@@ -6,17 +6,11 @@ async function getAcessToken(grapeCompany, wineCompany) {
   let grapeData = generateGrapeBody(grapeCompany);
   let wineData = generateWineBody(wineCompany);
 
-  await sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', grapeData).then((res) => {
-    global.grapeToken = "Bearer " + res.data.access_token;
-  }).catch((err) => {
-    console.log(err);
-  });
+  let res = await sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', grapeData);
+  global.grapeToken = "Bearer " + res.data.access_token;
 
-  await sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', wineData).then((res2) => {
-    global.wineToken = "Bearer " + res2.data.access_token;
-  }).catch((err) => {
-    console.log(err);
-  });
+  res = await sendTokenRequest('post', 'https://identity.primaverabss.com/connect/token', wineData);
+  global.wineToken = "Bearer " + res.data.access_token;
 }
 
 function sendRequest(method, url, company, bodyData) {
