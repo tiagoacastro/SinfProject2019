@@ -172,4 +172,4 @@ async function getPurchaseOrders(sellerCompany, buyerCompany) {
     await postSalesOrder(activeOrder2, sellerCompany, buyerCompany);
 }
 
-module.exports = { getPurchaseOrders };
+module.exports = router;
