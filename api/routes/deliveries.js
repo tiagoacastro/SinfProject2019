@@ -5,7 +5,7 @@ const { pool } = require('../config')
 async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
     for (let i = 0; i < orders.length; i++) {
         let deliveryOrderId = orders[i].id;
-        let res = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + ' = $1', [deliveryOrderId])
+        let res = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + '= $1', [deliveryOrderId])
         if (res.rows.length == 0) {
 
             let res2 = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + '= $1', [orders[i].documentLines[0].sourceDocId])
@@ -65,7 +65,6 @@ async function getDeliveryOrders(sellerCompany, buyerCompany) {
     var deliveryOrderArr = res.data;
     var activeDelivery2 = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
     var activeDelivery = activeDelivery2.filter(delivery => !delivery.autoCreated);
-
     await postGoodsReceipt(activeDelivery, sellerCompany, buyerCompany);
 }
 
