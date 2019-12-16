@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/products', productsRouter);
 app.use('/entities', entitiesRouter);
-app.use('/company/:companyID/sales', salesRouter);
+//app.use('/company/:companyID/sales', salesRouter);
 app.use('/company/:companyID/purchases', purchasesRouter);
 app.use('/processes', processesRouter);
 
@@ -106,7 +106,7 @@ async function initialize() {
 
 initialize().then(
     async() => {
-        await getPurchaseOrders(companies[0], companies[1]);
+        //await getPurchaseOrders(companies[0], companies[1]);
         //await getDeliveryOrders(companies[0], companies[1]);
         //await getPayments(companies[0], companies[1]);
     })
