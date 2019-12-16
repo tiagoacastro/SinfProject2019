@@ -27,7 +27,7 @@ CREATE TABLE private_data (
 );
 
 CREATE TYPE categories AS ENUM('Product', 'Document', 'Customer_Entity', 'Supplier_Entity');
-CREATE TYPE documents AS ENUM('Sales Order', 'Purchase Order', 'Delivery Order', 'Good Receipt', 'Sales Invoice', 'Purchase Invoice');
+CREATE TYPE documents AS ENUM('Sales Order', 'Purchase Order', 'Delivery Order', 'Goods Receipt', 'Sales Invoice', 'Purchase Invoice', 'Payment', 'Payment Receipt');
 CREATE TYPE method AS ENUM('Manual', 'Automatic');
 
 CREATE TABLE master_data (
@@ -47,7 +47,6 @@ CREATE TABLE events (
   id            SERIAL PRIMARY KEY,
   document      documents NOT NULL,
   method        method NOT NULL
-
 );
 
 CREATE TABLE processes_events (
@@ -61,6 +60,7 @@ CREATE TABLE logs (
   id            SERIAL PRIMARY KEY,
   moment        TIMESTAMP NOT NULL,
   id_company    INTEGER NOT NULL REFERENCES companies (id) ON UPDATE CASCADE,
-  document      TEXT,
-  success       BOOLEAN NOT NULL
+  document      TEXT NOT NULL,
+  success       BOOLEAN NOT NULL,
+  message       TEXT
 );
