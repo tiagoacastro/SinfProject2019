@@ -15,23 +15,37 @@ const Process = () => {
     const classes = useStyles();
     const [state, setState] = React.useState({
         dialogOpen: false,
-        processes: [{ id: 1 }],
+        processes: [],
+        selectedData: [],
     });
 
-    const handleDialogClose = async function () {
+    const handleDialogClose = () => {
         setState({ ...state, dialogOpen: false });
     };
 
-    const handleDialogOpen = async function () {
-        setState({ ...state, dialogOpen: true });
+    const handleDialogOpen = row => {
+        setState({ ...state, dialogOpen: true, selectedData: row });
     };
+
+    React.useEffect(() => {
+        getProcesses()
+            .then((response) => {
+                let data = response.data.processes;
+                data.forEach(process => {
+                    process.steps = process.events.length
+                });
+                console.log(data)
+                setState({ ...state, processes: data })
+            })
+            .catch((err) => { });
+    }, []);
 
     const columns = [
         {
             title: 'ID', field: 'id',
             render: (row) => {
                 return <Button variant="outlined"
-                    onClick={handleDialogOpen}
+                    onClick={() => handleDialogOpen(row)}
                 > {row.id}</Button >
             }
         },
@@ -40,18 +54,9 @@ const Process = () => {
         { title: 'N Steps', field: 'steps' },
     ];
 
-    React.useEffect(() => {
-        getProcesses()
-            .then((response) => {
-                const data = response.data.processes;
-                setState({ ...state, processes: data })
-            })
-            .catch((err) => { });
-    }, [state]);
-
     return (
         <div className={classes.root}>
-            <Box mb={3}>
+            <Box mb={3} display="flex" flexDirection="row-reverse">
                 <Button variant="contained" color="primary">Create Process</Button>
             </Box>
             <MaterialTable
@@ -61,7 +66,7 @@ const Process = () => {
                     toolbar: false
                 }}
             />
-            <ProcessDialog open={state.dialogOpen} close={handleDialogClose} />
+            <ProcessDialog open={state.dialogOpen} close={handleDialogClose} data={state.selectedData} />
 
         </div>
     );
