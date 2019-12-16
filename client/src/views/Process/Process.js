@@ -2,7 +2,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { getProcesses } from './requests';
 import MaterialTable from 'material-table';
-import { Button, Box } from '@material-ui/core';
+import { Button, Box, Snackbar, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import { AddProcessDialog, DetailsProcessDialog } from './components';
 
 const useStyles = makeStyles(theme => ({
@@ -18,6 +19,9 @@ const Process = () => {
         addDialogOpen: false,
         processes: [],
         selectedData: [],
+        snackBarOpen: false,
+        createdProcess: null,
+        snackMessage: '',
     });
 
     const handleDetailsDialogClose = () => {
@@ -25,11 +29,19 @@ const Process = () => {
     };
 
     const handleAddDialogClose = () => {
-        setState({ ...state, detailsDialogOpen: false });
+        setState({ ...state, addDialogOpen: false });
     };
 
     const handleDialogOpen = row => {
         setState({ ...state, detailsDialogOpen: true, selectedData: row });
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setState({ ...state, snackBarOpen: false });
     };
 
     React.useEffect(() => {
@@ -39,7 +51,6 @@ const Process = () => {
                 data.forEach(process => {
                     process.steps = process.events.length
                 });
-                console.log(data)
                 setState({ ...state, processes: data })
             })
             .catch((err) => { });
@@ -59,6 +70,16 @@ const Process = () => {
         { title: 'N Steps', field: 'steps' },
     ];
 
+
+    function handleSubmit(data) {
+        return event => {
+            event.preventDefault();
+
+            if (data.currentFields.length <= 0) {
+                setState({ ...state, snackBarOpen: true, snackMessage: 'Process must have at least one step.' })
+            }
+        }
+    }
     return (
         <div className={classes.root}>
             <Box mb={3} display="flex" flexDirection="row-reverse">
@@ -72,7 +93,32 @@ const Process = () => {
                 }}
             />
             <DetailsProcessDialog open={state.detailsDialogOpen} close={handleDetailsDialogClose} data={state.selectedData} />
-            <AddProcessDialog open={state.addDialogOpen} close={handleAddDialogClose} />
+            <AddProcessDialog open={state.addDialogOpen} close={handleAddDialogClose} submit={handleSubmit} />
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={state.snackBarOpen}
+                autoHideDuration={2000}
+                onClose={handleClose}
+                ContentProps={{
+                    'aria-describedby': 'message-id',
+                }}
+                message={<span id="message-id">{state.snackMessage}</span>}
+                action={[
+
+                    <IconButton
+                        key="close"
+                        aria-label="close"
+                        color="inherit"
+                        className={classes.close}
+                        onClick={handleClose}
+                    >
+                        <CloseIcon />
+                    </IconButton>,
+                ]}
+            />
         </div>
     );
 };

@@ -7,10 +7,16 @@ const DetailsProcessDialog = props => {
 
     const { open, close, submit, data } = props;
 
+    const companies = {
+        1: 'GrapeVine',
+        2: 'WineWard',
+    }
+
+
     const columns = [
         { title: 'Step', field: 'position', },
-        { title: 'ID', field: 'id', },
         { title: 'Document', field: 'document' },
+        { title: 'Issuing Company', field: 'issuing_company', lookup: companies },
         { title: 'Method', field: 'method' }
 
     ];
