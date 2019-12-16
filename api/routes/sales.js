@@ -141,7 +141,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 }
 
                 await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, "Document"]);
-                console.log('purchase order: ' + purchaseOrderId + ' - Doesnt exist, sales order was created on company' + sellerCompany.id + 'with id: ' + saleOrderId)
+                console.log('purchase order: ' + purchaseOrderId + ' - Doesnt exist, sales order was created on company ' + sellerCompany.id + ' with id: ' + saleOrderId)
             } catch (err) {
                 console.log(err);
             }
