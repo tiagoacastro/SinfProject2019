@@ -77,7 +77,7 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
 
 async function getDeliveryOrders(sellerCompany, buyerCompany) {
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/shipping/deliveries`, sellerCompany.id);
-    var deliveryOrderArr = res.data;
+    var deliveryOrderArr = res.data; 
     var activeDelivery2 = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
     var activeDelivery = activeDelivery2.filter(delivery => !delivery.autoCreated);
     await postGoodsReceipt(activeDelivery, sellerCompany, buyerCompany);

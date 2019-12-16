@@ -44,9 +44,10 @@ CREATE TABLE processes (
 );
 
 CREATE TABLE events (
-  id            SERIAL PRIMARY KEY,
-  document      documents NOT NULL,
-  method        method NOT NULL
+  id              SERIAL PRIMARY KEY,
+  document        documents NOT NULL,
+  method          method NOT NULL,
+  issuing_company INTEGER REFERENCES companies (id) ON UPDATE CASCADE ON DELETE CASCADE,
 );
 
 CREATE TABLE processes_events (

@@ -99,6 +99,8 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 }
             }
 
+            var reverse_dl = dl.reverse();
+
             let ans = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE category = $1', ['Customer_Entity']);
             let party;
             if (ans.rows.length != 1) {
@@ -132,7 +134,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 unloadingPostalZone: orders[i].unloadingPostalZone,
                 unloadingCityName: orders[i].unloadingCityName,
                 unloadingCountry: orders[i].unloadingCountry,
-                documentLines: dl
+                documentLines: reverse_dl
             };
 
             try {
@@ -187,4 +189,4 @@ async function getPurchaseOrders(sellerCompany, buyerCompany) {
     await postSalesOrder(activeOrder2, sellerCompany, buyerCompany);
 }
 
-module.exports = router;
+module.exports = { getPurchaseOrders };
