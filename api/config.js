@@ -16,6 +16,7 @@ let client;
 
 async function connect() {
     client = await pool.connect();
+    console.log("Connection with database established.\n");
     return client;
 }
 
