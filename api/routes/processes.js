@@ -33,5 +33,33 @@ async function asyncForEach(array, callback) {
     }
 }
 
+router.post('/create', async function (req, res, next) {
+    const process_name = req.body.process.name;
+    const events = req.body.process.events;
+    const process_id = await createProcess(process_name);
+    console.log(process_id);
+    createEvents(process_id, events);
+});
+
+async function createProcess(name) {
+    const client = getClient();
+    const process_id = await client.query('INSERT INTO processes (name) VALUES ($1) RETURNING id', [name]);
+    return process_id.rows[0].id;
+}
+
+async function createEvents(process_id, events) {
+    const client = getClient();
+    let event_id;
+
+    await asyncForEach(events, async (event) => {
+        event_id = await client
+            .query('INSERT INTO events (document, method, issuing_company) VALUES ($1, $2, $3) RETURNING id',
+                [event.document, event.method, event.issuing_company]);
+        event_id = event_id.rows[0].id;
+        await client
+            .query('INSERT INTO processes_events (id_process, id_event, position) VALUES ($1, $2, $3)',
+                [process_id, event_id, event.position]);
+    });
+}
 
 module.exports = router;

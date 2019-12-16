@@ -17,23 +17,14 @@ export const getSupplierReferences = async () => {
 }
 
 export const deleteMappedEntities = (id) => {
-    return axios.delete(`http://localhost:9000/entities/${id}`)
-        .then((response) => {
-            console.log(response)
-        }).catch((err) => {
-            console.log(err)
-        })
+    return axios.delete(`http://localhost:9000/entities/${id}`);
 }
 
 
 export const postMappedEntities = (category, reference_1, reference_2) => {
-    return axios.post('http://localhost:9000/entities/map', {
+    return axios.post('http://localhost:9000/entities/map'), {
         reference_1: reference_1,
         reference_2: reference_2,
         category: category
-    }).then((response) => {
-        console.log(response)
-    }).catch((err) => {
-        console.log(err)
-    })
+    }
 }

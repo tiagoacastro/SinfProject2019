@@ -48,6 +48,14 @@ const AddProcessDialog = props => {
         setState({ ...state, name: event.target.value });
     };
 
+    function handleSubmit(data) {
+        return event => {
+            event.preventDefault();
+            setState({ ...state, currentFields: [], name: '' })
+            submit(data);
+        }
+    }
+
     return (
         <div>
             <Dialog
@@ -60,11 +68,11 @@ const AddProcessDialog = props => {
                 <DialogTitle id="draggable-dialog-title">New Process</DialogTitle>
                 <Divider />
                 <DialogContent>
-                    <form onSubmit={submit(state)}>
+                    <form onSubmit={handleSubmit(state)}>
                         <Box mt={3} mb={6} px={2}>
                             <Grid container justify="flex-start" spacing={2}>
                                 <Grid container item xs={3} py={1}>
-                                    <TextField required id="name" label="Name" onChange={handleNameChange} />
+                                    <TextField required id="name" label="Name" onChange={handleNameChange} value={state.name} />
                                 </Grid>
                                 <Grid container item xs={3} py={1} justify="flex-start">
                                     <FormControlLabel

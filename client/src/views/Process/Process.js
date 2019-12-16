@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { getProcesses } from './requests';
+import { getProcesses, postProcesses } from './requests';
 import MaterialTable from 'material-table';
 import { Button, Box, Snackbar, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
@@ -71,15 +71,25 @@ const Process = () => {
     ];
 
 
-    function handleSubmit(data) {
-        return event => {
-            event.preventDefault();
-
-            if (data.currentFields.length <= 0) {
-                setState({ ...state, snackBarOpen: true, snackMessage: 'Process must have at least one step.' })
-            }
+    const handleSubmit = data => {
+        if (data.currentFields.length <= 0) {
+            setState({ ...state, snackBarOpen: true, snackMessage: 'Process must have at least one step.' })
+            return;
         }
+        setState({ ...state, addDialogOpen: false });
+        let process = { name: data.name, events: [] };
+        data.currentFields.forEach(eventData => {
+            process.events.push({
+                issuing_company: eventData.issuing_company,
+                document: eventData.document,
+                method: eventData.method,
+                position: eventData.position
+            });
+        });
+
+        postProcesses(process);
     }
+
     return (
         <div className={classes.root}>
             <Box mb={3} display="flex" flexDirection="row-reverse">
