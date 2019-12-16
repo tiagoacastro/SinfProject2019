@@ -1,6 +1,7 @@
 var express = require('express');
 var { sendRequest } = require('./../utils/jasmin');
-const { pool } = require('../config')
+const { pool } = require('../config');
+var { log } = require('./logs');
 
 async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
     for (let i = 0; i < orders.length; i++) {
@@ -16,37 +17,47 @@ async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
 
                 if (salesInvoiceId.rows.length != 0) {
                     let salesInvoice = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices/${salesInvoiceId.rows[0].reference_1}`, sellerCompany.id);
-                   
+
                     orderBodyArr.push({
                         sourceDoc: salesInvoice.data.naturalKey,
                         discount: orders[i].documentLines[j].discountAmount,
                         settled: orders[i].documentLines[j].settledAmount.amount
                     });
                 } else {
-                    if (salesInvoiceId.rows.length == 0)
-                        console.log("No sales invoice was found with the purchase invoice")
-                    else
-                        console.log(deliveryOrderId + ' - Error with order check')
+                    log(sellerCompany.id, 'Payment Receipt', false, "Error");
+
+                    if (salesInvoiceId.rows.length == 0) {
+                        return console.error("No sales invoice was found with the purchase invoice")
+                    } else
+                        return console.error(deliveryOrderId + ' - Error with order check')
                 }
             }
-            if(orderBodyArr.length != 0) {
+            if (orderBodyArr.length != 0) {
                 try {
-                    console.log(orderBodyArr);
                     let post_res = await sendRequest('post', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/accountsReceivable/processOpenItems/${sellerCompany.c_key}`, sellerCompany.id, orderBodyArr);
                     let paymentReceiptId = post_res.data;
-    
+
                     await pool.query('INSERT INTO master_data (reference_' + sellerCompany.id + ', reference_' + buyerCompany.id + ', category) VALUES ($1, $2, $3)', [paymentReceiptId, paymentId, "Document"])
                     console.log('payment: ' + paymentId + ' - Doesnt exist, payment receipt was created on company ' + sellerCompany.id + ' with id: ' + paymentReceiptId)
+
+                    log(sellerCompany.id, 'Payment Receipt', true, "id: " + paymentReceiptId);
                 } catch (err) {
                     console.log(err);
+
+                    log(sellerCompany.id, 'Payment Receipt', false, "Error");
                 }
             }
-            
+
         } else {
-            if (res.rows.length == 1)
+            if (res.rows.length == 1) {
                 console.log(paymentId + ' - Already exists with id on company 1 being: ' + res.rows[0])
-            else
-                console.log(paymentId + ' - Error with order check')
+
+                log(sellerCompany.id, 'Payment Receipt', false, "Document already exists");
+            } else {
+                console.log(paymentId + ' - Error with order check');
+
+                log(sellerCompany.id, 'Payment Receipt', false, "Error");
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 var { sendRequest } = require('./../utils/jasmin');
-const { pool } = require('../config')
+const { pool } = require('../config');
+var { log } = require('./logs');
 
 async function postSalesInvoice(order, sellerCompany, buyerCompany) {
     let deliveryOrderId = order.id;
@@ -27,6 +28,8 @@ async function postSalesInvoice(order, sellerCompany, buyerCompany) {
 
         let party;
         if (ans.rows.length != 1) {
+            log(sellerCompany.id, 'Sales Invoice', false, "Error getting costumer entity");
+
             return console.error('Error getting master data for customer entity');
         }
 
@@ -65,17 +68,26 @@ async function postSalesInvoice(order, sellerCompany, buyerCompany) {
             await pool.query('INSERT INTO private_data (id_company, document_1, document_2) VALUES ($1, $2, $3)', [sellerCompany.id, deliveryOrderId, invoiceId])
             console.log('delivery order for invoice: ' + deliveryOrderId + ' - Doesnt exist, invoice was created on company ' + sellerCompany.id + ' with id: ' + invoiceId)
 
+            log(sellerCompany.id, 'Sales Order', true, "id: " + invoiceId);
+
             await postPurchasesInvoice(invoiceId, order, sellerCompany, buyerCompany);
         } catch (err) {
+            log(sellerCompany.id, 'Sales Invoice', false, "Error");
+
             console.log(err);
         }
     } else {
         if (rows.length == 1) {
             console.log('delivery order for invoice: ' + deliveryOrderId + ' - Already exists with id on company ' + sellerCompany.id + ' being: ' + rows[0].document_2);
 
+            log(sellerCompany.id, 'Sales Invoice', false, "Document already exists");
+
             await postPurchasesInvoice(rows[0].document_2, order, sellerCompany, buyerCompany);
-        } else
+        } else {
             console.log('delivery order for invoice: ' + deliveryOrderId + ' - Error with order check')
+
+            log(sellerCompany.id, 'Sales Invoice', false, "Error");
+        }
     }
 }
 
@@ -91,6 +103,8 @@ async function postPurchasesInvoice(salesInvoice, order, sellerCompany, buyerCom
         for (let i = 0; i < lines.length; i++) {
             let res = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + ' = $1', [lines[i].item]);
             if (res.rows.length != 1) {
+                log(buyerCompany.id, 'Products Invoice', false, "Error getting master data for product");
+
                 return console.error('Error getting master data for product');
             } else {
                 let item;
@@ -110,6 +124,8 @@ async function postPurchasesInvoice(salesInvoice, order, sellerCompany, buyerCom
         let ans = await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE category = $1', ['Supplier_Entity']);
         let party;
         if (ans.rows.length != 1) {
+            log(buyerCompany.id, 'Products Invoice', false, "Error getting supplier entity");
+
             return console.error('Error getting master data for customer entity');
         }
 
@@ -153,8 +169,12 @@ async function postPurchasesInvoice(salesInvoice, order, sellerCompany, buyerCom
 
             await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, "Document"])
             console.log('sales invoice: ' + salesInvoice + ' - Doesnt exist, purchase invoice was created on company ' + buyerCompany.id + ' with id: ' + invoiceId)
+
+            log(buyerCompany.id, 'Products Invoice', true, "id: " + invoiceId);
         } catch (err) {
             console.log(err);
+
+            log(buyerCompany.id, 'Products Invoice', false, "Error");
         }
     } else {
         if (rows.length == 1) {
@@ -167,8 +187,13 @@ async function postPurchasesInvoice(salesInvoice, order, sellerCompany, buyerCom
             }
 
             console.log('sales invoice: ' + salesInvoice + ' - Already exists with id on company ' + buyerCompany.id + ' being: ' + id);
-        } else
+
+            log(buyerCompany.id, 'Products Invoice', false, "Document already exists");
+        } else {
             console.log('sales invoice: ' + salesInvoice + ' - Error with invoice check')
+
+            log(buyerCompany.id, 'Products Invoice', false, "Error");
+        }
     }
 }
 
@@ -184,6 +209,8 @@ async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
         for (let i = 0; i < lines.length; i++) {
             let res = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + ' = $1', [lines[i].salesItem]);
             if (res.rows.length != 1) {
+                log(buyerCompany.id, 'Products Invoice', false, "Error getting master data for product");
+
                 return console.error('Error getting master data for product');
             } else {
                 let item;
@@ -203,6 +230,8 @@ async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
         let ans = await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE category = $1', ['Supplier_Entity']);
         let party;
         if (ans.rows.length != 1) {
+            log(buyerCompany.id, 'Products Invoice', false, "Error getting supplier entity");
+
             return console.error('Error getting master data for customer entity');
         }
 
@@ -246,8 +275,12 @@ async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
 
             await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, "Document"])
             console.log('sales invoice: ' + salesInvoice.id + ' - Doesnt exist, purchase invoice was created on company ' + buyerCompany.id + ' with id: ' + invoiceId)
+
+            log(buyerCompany.id, 'Products Invoice', true, "id: " + invoiceId);
         } catch (err) {
             console.log(err);
+
+            log(buyerCompany.id, 'Products Invoice', false, "Error");
         }
     } else {
         if (rows.length == 1) {
@@ -260,8 +293,13 @@ async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
             }
 
             console.log('sales invoice: ' + salesInvoice.id + ' - Already exists with id on company ' + buyerCompany.id + ' being: ' + id);
-        } else
+
+            log(buyerCompany.id, 'Products Invoice', false, "Document already exists");
+        } else {
             console.log('sales invoice: ' + salesInvoice.id + ' - Error with invoice check')
+
+            log(buyerCompany.id, 'Products Invoice', false, "Error");
+        }
     }
 }
 

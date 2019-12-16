@@ -1,6 +1,7 @@
 var { postSalesInvoice } = require('./invoices');
 var { sendRequest } = require('./../utils/jasmin');
-const { pool } = require('../config')
+var { log } = require('./logs');
+const { pool } = require('../config');
 
 async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
     for (let i = 0; i < orders.length; i++) {
@@ -31,15 +32,24 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
                     await pool.query('INSERT INTO master_data (reference_' + sellerCompany.id + ', reference_' + buyerCompany.id + ', category) VALUES ($1, $2, $3)', [deliveryOrderId, goodsReceiptId, "Document"])
                     console.log('delivery order: ' + deliveryOrderId + ' - Doesnt exist, goods receipt was created on company ' + buyerCompany.id + ' with id: ' + goodsReceiptId)
 
+                    log(buyerCompany.id, 'Goods Receipt', true, "id: " + goodsReceiptId);
+
                     await postSalesInvoice(orders[i], sellerCompany, buyerCompany);
                 } catch (err) {
                     console.log(err);
+
+                    log(buyerCompany.id, 'Goods Receipt', false, "Error");
                 }
             } else {
-                if (res2.rows.length == 0)
+                if (res2.rows.length == 0) {
                     console.log("No purchase order was found with the delivery order source sales order")
-                else
+
+                    log(buyerCompany.id, 'Goods Receipt', false, "Error finding purchase order");
+                } else {
                     console.log('delivery order: ' + deliveryOrderId + ' - Error with order check')
+
+                    log(buyerCompany.id, 'Goods Receipt', false, "Error");
+                }
             }
         } else {
             if (res.rows.length == 1) {
@@ -53,9 +63,14 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
 
                 console.log('delivery order: ' + deliveryOrderId + ' - Already exists with id on company ' + buyerCompany.id + ' being: ' + id)
 
+                log(buyerCompany.id, 'Goods Receipt', false, "Document already exists");
+
                 await postSalesInvoice(orders[i], sellerCompany, buyerCompany);
-            } else
+            } else {
                 console.log('delivery order: ' + deliveryOrderId + ' - Error with order check')
+
+                log(buyerCompany.id, 'Goods Receipt', false, "Error");
+            }
         }
     }
 }

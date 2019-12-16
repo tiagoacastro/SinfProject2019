@@ -18,6 +18,7 @@ var { sendRequest } = require('./utils/jasmin');
 var { getPurchaseOrders } = require('./routes/sales');
 var { getDeliveryOrders } = require('./routes/deliveries');
 var { getPayments } = require('./routes/payment');
+var { log } = require('./routes/logs');
 var app = express();
 
 // view engine setup

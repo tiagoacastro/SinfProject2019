@@ -1,12 +1,13 @@
 var express = require('express');
 var { sendRequest } = require('./../utils/jasmin');
-const { pool } = require('../config')
+const { pool } = require('../config');
 const { getCompanyInformation, getMappedProducts, getMappedEntities } = require('../utils/requests')
 const { getNotMappedProducts, getNotMappedEntities } = require('../utils/utils')
+var { log } = require('./logs');
 
 var router = express.Router({ mergeParams: true });
 
-router.get('/items', async function (req, res, next) {
+router.get('/items', async function(req, res, next) {
     const companyID = req.params.companyID;
     try {
         const companyInfo = await getCompanyInformation(companyID);
@@ -22,7 +23,7 @@ router.get('/items', async function (req, res, next) {
 });
 
 async function getSalesItems(companyID, tenant, organization) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/salesCore/salesItems', parseInt(companyID))
             .then(resJasmin => {
                 resolve(resJasmin.data.map(a => a.itemKey));
@@ -30,7 +31,7 @@ async function getSalesItems(companyID, tenant, organization) {
     });
 };
 
-router.get('/costumers', async function (req, res, next) {
+router.get('/costumers', async function(req, res, next) {
     const companyID = req.params.companyID;
     try {
         const companyInfo = await getCompanyInformation(companyID);
@@ -42,11 +43,14 @@ router.get('/costumers', async function (req, res, next) {
         const unmappedCostumers = await getNotMappedEntities(false, costumerKeys, mappedCostumers.rows);
 
         res.send(unmappedCostumers);
-    } catch (err) { cosole.log(err); res.sendStatus(400) }
+    } catch (err) {
+        cosole.log(err);
+        res.sendStatus(400)
+    }
 });
 
 async function getCostumers(companyID, tenant, organization) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         sendRequest('get', 'https://my.jasminsoftware.com/api/' + tenant + '/' + organization + '/salesCore/customerParties', parseInt(companyID))
             .then(resJasmin => {
                 resolve(resJasmin.data.map(a => a.partyKey));
@@ -55,7 +59,7 @@ async function getCostumers(companyID, tenant, organization) {
 };
 
 
-router.get('/', function (req, res, next) {
+router.get('/', function(req, res, next) {
     const { id } = req.params;
     var data = sendRequest('get', 'https://my.jasminsoftware.com/api/224814/224814-0001/sales/orders', 1);
     console.log(data);
@@ -75,6 +79,8 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
             for (let i = 0; i < lines.length; i++) {
                 let res = await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE reference_' + buyerCompany.id + ' = $1', [lines[i].purchasesItem]);
                 if (res.rows.length != 1) {
+                    log(sellerCompany.id, 'Sales Order', false, "Error gettomg data for: " + lines[i].purchasesItem);
+
                     return console.error('Error getting master data for product');
                 } else {
                     let item;
@@ -96,6 +102,8 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
             let ans = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE category = $1', ['Customer_Entity']);
             let party;
             if (ans.rows.length != 1) {
+                log(sellerCompany.id, 'Sales Order', false, "Error getting costumer entity");
+
                 return console.error('Error getting master data for customer entity');
             }
 
@@ -142,8 +150,12 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
 
                 await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, "Document"]);
                 console.log('purchase order: ' + purchaseOrderId + ' - Doesnt exist, sales order was created on company ' + sellerCompany.id + ' with id: ' + saleOrderId)
+
+                log(sellerCompany.id, 'Sales Order', true, "id: " + salesOrderId);
             } catch (err) {
                 console.log(err);
+
+                log(sellerCompany.id, 'Sales Order', false, "Error");
             }
         } else {
             if (rows.length == 1) {
@@ -156,8 +168,13 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 }
 
                 console.log('purchase order: ' + purchaseOrderId + ' - Already exists with id on company ' + sellerCompany.id + ' being: ' + id)
-            } else
+
+                log(sellerCompany.id, 'Sales Order', false, "Document already exists");
+            } else {
                 console.log('purchase order: ' + purchaseOrderId + ' - Error with order check')
+
+                log(sellerCompany.id, 'Sales Order', false, "Error");
+            }
         }
     }
 }
