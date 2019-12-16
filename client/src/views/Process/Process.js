@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import { getProcesses } from './requests';
 import MaterialTable from 'material-table';
 import { Button, Box } from '@material-ui/core';
-import { ProcessDialog } from './components';
+import { AddProcessDialog, DetailsProcessDialog } from './components';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -14,17 +14,22 @@ const useStyles = makeStyles(theme => ({
 const Process = () => {
     const classes = useStyles();
     const [state, setState] = React.useState({
-        dialogOpen: false,
+        detailsDialogOpen: false,
+        addDialogOpen: false,
         processes: [],
         selectedData: [],
     });
 
-    const handleDialogClose = () => {
-        setState({ ...state, dialogOpen: false });
+    const handleDetailsDialogClose = () => {
+        setState({ ...state, detailsDialogOpen: false });
+    };
+
+    const handleAddDialogClose = () => {
+        setState({ ...state, detailsDialogOpen: false });
     };
 
     const handleDialogOpen = row => {
-        setState({ ...state, dialogOpen: true, selectedData: row });
+        setState({ ...state, detailsDialogOpen: true, selectedData: row });
     };
 
     React.useEffect(() => {
@@ -57,7 +62,7 @@ const Process = () => {
     return (
         <div className={classes.root}>
             <Box mb={3} display="flex" flexDirection="row-reverse">
-                <Button variant="contained" color="primary">Create Process</Button>
+                <Button variant="contained" color="primary" onClick={() => { setState({ ...state, addDialogOpen: true }) }}>Create Process</Button>
             </Box>
             <MaterialTable
                 columns={columns}
@@ -66,8 +71,8 @@ const Process = () => {
                     toolbar: false
                 }}
             />
-            <ProcessDialog open={state.dialogOpen} close={handleDialogClose} data={state.selectedData} />
-
+            <DetailsProcessDialog open={state.detailsDialogOpen} close={handleDetailsDialogClose} data={state.selectedData} />
+            <AddProcessDialog open={state.addDialogOpen} close={handleAddDialogClose} />
         </div>
     );
 };

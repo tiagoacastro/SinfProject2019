@@ -1,10 +1,9 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogActions, DialogTitle, Typography } from '@material-ui/core';
 import { Grid, Divider, Box, Button, TextField, MenuItem, NativeSelect, FormControl, FormHelperText } from '@material-ui/core';
-import { getSuppliers, getCostumers, postMappedEntities } from './requests';
 import MaterialTable from 'material-table';
 
-const ProcessDialog = props => {
+const DetailsProcessDialog = props => {
 
     const { open, close, submit, data } = props;
 
@@ -61,4 +60,4 @@ const ProcessDialog = props => {
 }
 
 
-export default ProcessDialog;
+export default DetailsProcessDialog;
