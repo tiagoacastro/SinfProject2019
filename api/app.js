@@ -39,12 +39,12 @@ app.use('/company/:companyID/purchases', purchasesRouter);
 app.use('/processes', processesRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -104,11 +104,11 @@ async function initialize() {
 //testDB();
 
 initialize().then(
-    setTimeout(async function() {
-        //await getPurchaseOrders(companies[0], companies[1]);
+    async () => {
+        await getPurchaseOrders(companies[0], companies[1]);
         //await getDeliveryOrders(companies[0], companies[1]);
         //await getPayments(companies[0], companies[1]);
-    }, 2000));
+    })
 
 
 module.exports = app;
