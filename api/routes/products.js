@@ -17,6 +17,7 @@ router.post('/map', async function (req, res, next) {
         await mapProducts(reference_1, reference_2);
         res.sendStatus(200);
     } catch (err) {
+        console.log(err);
         res.sendStatus(400);
     }
 });

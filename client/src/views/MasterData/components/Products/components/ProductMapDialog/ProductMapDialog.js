@@ -72,7 +72,11 @@ const ProductMapDialog = props => {
             if (company1State === '1') {
                 pos1 = salesState
                 pos2 = purchaseState
+            } else {
+                pos2 = salesState
+                pos1 = purchaseState
             }
+
             postMappedProducts(pos1, pos2)
                 .then(() => { submit(); })
                 .catch((err) => { });

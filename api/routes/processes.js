@@ -14,9 +14,10 @@ async function getProcesses(companyID, tenant, organization) {
 
     try {
         const processesQuery = await client.query('SELECT * FROM processes');
-
         await asyncForEach(processesQuery.rows, async (process) => {
-            const process_events = await client.query('SELECT * FROM processes_events WHERE id_process=$1', [process.id]);
+            const process_events = await client.
+                query('SELECT * FROM processes_events INNER JOIN events ON (processes_events.id_event = events.id) WHERE id_process=$1 ORDER BY position'
+                    , [process.id]);
             process.events = process_events.rows;
             processes.push(process)
         });

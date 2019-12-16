@@ -114,11 +114,11 @@ const Entities = () => {
                         new Promise((resolve, reject) => {
                             setTimeout(() => {
                                 {
-                                    const data = state.entitiesData;
+                                    const data = entitiesData;
                                     const index = data.indexOf(oldData);
                                     data.splice(index, 1);
                                     data.push({ category: oldData.category })
-                                    setEntitiesData(data, () => resolve());
+                                    setEntitiesData(data);
 
                                     deleteMappedEntities(oldData.id)
                                         .then((response) => { })

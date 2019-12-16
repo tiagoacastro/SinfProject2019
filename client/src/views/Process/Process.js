@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import { getProcesses } from './requests';
 import MaterialTable from 'material-table';
 import { Button, Box } from '@material-ui/core';
-import { ProcessDialog } from './components';
+import { AddProcessDialog, DetailsProcessDialog } from './components';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -14,24 +14,43 @@ const useStyles = makeStyles(theme => ({
 const Process = () => {
     const classes = useStyles();
     const [state, setState] = React.useState({
-        dialogOpen: false,
-        processes: [{ id: 1 }],
+        detailsDialogOpen: false,
+        addDialogOpen: false,
+        processes: [],
+        selectedData: [],
     });
 
-    const handleDialogClose = async function () {
-        setState({ ...state, dialogOpen: false });
+    const handleDetailsDialogClose = () => {
+        setState({ ...state, detailsDialogOpen: false });
     };
 
-    const handleDialogOpen = async function () {
-        setState({ ...state, dialogOpen: true });
+    const handleAddDialogClose = () => {
+        setState({ ...state, detailsDialogOpen: false });
     };
+
+    const handleDialogOpen = row => {
+        setState({ ...state, detailsDialogOpen: true, selectedData: row });
+    };
+
+    React.useEffect(() => {
+        getProcesses()
+            .then((response) => {
+                let data = response.data.processes;
+                data.forEach(process => {
+                    process.steps = process.events.length
+                });
+                console.log(data)
+                setState({ ...state, processes: data })
+            })
+            .catch((err) => { });
+    }, []);
 
     const columns = [
         {
             title: 'ID', field: 'id',
             render: (row) => {
                 return <Button variant="outlined"
-                    onClick={handleDialogOpen}
+                    onClick={() => handleDialogOpen(row)}
                 > {row.id}</Button >
             }
         },
@@ -40,19 +59,10 @@ const Process = () => {
         { title: 'N Steps', field: 'steps' },
     ];
 
-    React.useEffect(() => {
-        getProcesses()
-            .then((response) => {
-                const data = response.data.processes;
-                setState({ ...state, processes: data })
-            })
-            .catch((err) => { });
-    }, [state]);
-
     return (
         <div className={classes.root}>
-            <Box mb={3}>
-                <Button variant="contained" color="primary">Create Process</Button>
+            <Box mb={3} display="flex" flexDirection="row-reverse">
+                <Button variant="contained" color="primary" onClick={() => { setState({ ...state, addDialogOpen: true }) }}>Create Process</Button>
             </Box>
             <MaterialTable
                 columns={columns}
@@ -61,8 +71,8 @@ const Process = () => {
                     toolbar: false
                 }}
             />
-            <ProcessDialog open={state.dialogOpen} close={handleDialogClose} />
-
+            <DetailsProcessDialog open={state.detailsDialogOpen} close={handleDetailsDialogClose} data={state.selectedData} />
+            <AddProcessDialog open={state.addDialogOpen} close={handleAddDialogClose} />
         </div>
     );
 };

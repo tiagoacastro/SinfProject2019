@@ -93,6 +93,8 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 }
             }
 
+            var reverse_dl = dl.reverse();
+
             let ans = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE category = $1', ['Customer_Entity']);
             let party;
             if (ans.rows.length != 1) {
@@ -124,7 +126,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 unloadingPostalZone: orders[i].unloadingPostalZone,
                 unloadingCityName: orders[i].unloadingCityName,
                 unloadingCountry: orders[i].unloadingCountry,
-                documentLines: dl
+                documentLines: reverse_dl
             };
 
             try {
@@ -141,7 +143,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 }
 
                 await pool.query('INSERT INTO master_data (reference_1, reference_2, category) VALUES ($1, $2, $3)', [reference_1, reference_2, "Document"]);
-                console.log('purchase order: ' + purchaseOrderId + ' - Doesnt exist, sales order was created on company' + sellerCompany.id + 'with id: ' + saleOrderId)
+                console.log('purchase order: ' + purchaseOrderId + ' - Doesnt exist, sales order was created on company ' + sellerCompany.id + ' with id: ' + saleOrderId)
             } catch (err) {
                 console.log(err);
             }
@@ -166,7 +168,8 @@ async function getPurchaseOrders(sellerCompany, buyerCompany) {
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders`, buyerCompany.id);
     var purchaseOrderArr = res.data;
     var activeOrder = purchaseOrderArr.filter(order => !order.isDeleted);
-    await postSalesOrder(activeOrder, sellerCompany, buyerCompany);
+    var activeOrder2 = activeOrder.filter(order => !order.autoCreated);
+    await postSalesOrder(activeOrder2, sellerCompany, buyerCompany);
 }
 
-module.exports = router;
+module.exports = { getPurchaseOrders };
