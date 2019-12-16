@@ -66,7 +66,6 @@ async function getDeliveryOrders(sellerCompany, buyerCompany) {
     var activeDelivery2 = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
     var activeDelivery = activeDelivery2.filter(delivery => !delivery.autoCreated);
 
-    console.log(activeDelivery.length)
     await postGoodsReceipt(activeDelivery, sellerCompany, buyerCompany);
 }
 
