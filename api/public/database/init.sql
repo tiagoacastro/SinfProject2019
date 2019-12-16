@@ -6,6 +6,8 @@ DROP TABLE IF EXISTS processes_events;
 DROP TABLE IF EXISTS processes;
 DROP TABLE IF EXISTS events;
 DROP TYPE IF EXISTS categories;
+DROP TYPE IF EXISTS documents;
+DROP TYPE IF EXISTS method;
 
 CREATE TABLE companies (
   id            SERIAL PRIMARY KEY,
@@ -25,6 +27,8 @@ CREATE TABLE private_data (
 );
 
 CREATE TYPE categories AS ENUM('Product', 'Document', 'Customer_Entity', 'Supplier_Entity');
+CREATE TYPE documents AS ENUM('Sales Order', 'Purchase Order', 'Delivery Order', 'Good Receipt', 'Sales Invoice', 'Purchase Invoice');
+CREATE TYPE method AS ENUM('Manual', 'Automatic');
 
 CREATE TABLE master_data (
   id            SERIAL PRIMARY KEY,
@@ -35,12 +39,15 @@ CREATE TABLE master_data (
 
 CREATE TABLE processes (
   id            SERIAL PRIMARY KEY,
-  name          TEXT NOT NULL UNIQUE
+  name          TEXT NOT NULL UNIQUE,
+  active        BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE events (
   id            SERIAL PRIMARY KEY,
-  name          TEXT NOT NULL UNIQUE
+  document      documents NOT NULL,
+  method        method NOT NULL
+
 );
 
 CREATE TABLE processes_events (
