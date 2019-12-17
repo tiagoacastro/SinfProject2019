@@ -28,4 +28,14 @@ async function getMappedEntities() {
     return client.query('SELECT * FROM master_data where category::text LIKE \'%Entity\'');
 }
 
-module.exports = { getCompanyInformation, getCompaniesInformation, getMappedProducts, getMappedEntities };
+async function log(company, document, success, message) {
+    const client = getClient();
+    var currentdate = new Date();
+    var timestamp = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate() + ' ' +
+        currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+
+    await client.query('INSERT INTO logs (moment, id_company, document, success, message) VALUES ($1, $2, $3, $4, $5)', [timestamp, company, document, success, message])
+}
+
+
+module.exports = { getCompanyInformation, getCompaniesInformation, getMappedProducts, getMappedEntities, log };
