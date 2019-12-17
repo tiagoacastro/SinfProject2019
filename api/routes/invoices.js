@@ -68,7 +68,7 @@ async function postSalesInvoice(order, sellerCompany, buyerCompany) {
             await pool.query('INSERT INTO private_data (id_company, document_1, document_2) VALUES ($1, $2, $3)', [sellerCompany.id, deliveryOrderId, invoiceId])
             console.log('delivery order for invoice: ' + deliveryOrderId + ' - Doesnt exist, invoice was created on company ' + sellerCompany.id + ' with id: ' + invoiceId)
 
-            log(sellerCompany.id, 'Sales Order', true, "id: " + invoiceId);
+            log(sellerCompany.id, 'Sales Invoice', true, "id: " + invoiceId);
 
             await postPurchasesInvoice(invoiceId, order, sellerCompany, buyerCompany);
         } catch (err) {
@@ -198,7 +198,7 @@ async function postPurchasesInvoice(salesInvoice, order, sellerCompany, buyerCom
 }
 
 //manual
-async function postPurchasesInvoice(salesInvoice, sellerCompany, buyerCompany) {
+async function postPurchasesInvoiceManual(salesInvoice, sellerCompany, buyerCompany) {
     let result = await pool.query('SELECT reference_' + buyerCompany.id + ' FROM master_data WHERE reference_' + sellerCompany.id + ' = $1', [salesInvoice.id]);
 
     let rows = result.rows;
