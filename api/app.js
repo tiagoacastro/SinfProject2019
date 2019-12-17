@@ -43,12 +43,12 @@ app.use('/company/:companyID/sales', salesRouter);
 app.use('/company/:companyID/purchases', purchasesRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -84,7 +84,7 @@ async function asyncForEach(array, callback) {
 
 
 
-const loopBody = async () => {
+const loopBody = async() => {
 
     const client = getClient();
     let result = await client.query('SELECT * FROM processes where active = true');
@@ -95,8 +95,8 @@ const loopBody = async () => {
         events.push(result2.rows);
     }
 
-    await asyncForEach(events, async (event) => {
-        await asyncForEach(event, async (e) => {
+    await asyncForEach(events, async(event) => {
+        await asyncForEach(event, async(e) => {
             if (e.method == "Automatic") {
                 switch (e.document) {
                     case "Sales Order":
@@ -128,10 +128,10 @@ const loopBody = async () => {
     })
 }
 
-const loop = async () => {
+const loop = async() => {
     while (true) {
         loopBody();
-        await new Promise(resolve => setTimeout(() => resolve(console.log("Looping again")), 15000));
+        await new Promise(resolve => setTimeout(() => resolve(console.log("Looping again")), 25000));
     }
 }
 

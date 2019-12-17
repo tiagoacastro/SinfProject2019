@@ -67,8 +67,6 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
                 }
 
                 console.log('delivery order: ' + deliveryOrderId + ' - Already exists with id on company ' + buyerCompany.id + ' being: ' + id)
-
-                log(buyerCompany.id, 'Goods Receipt', false, "Document already exists");
             } else {
                 console.log('delivery order: ' + deliveryOrderId + ' - Error with order check')
 
