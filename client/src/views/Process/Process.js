@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { getProcesses, postProcesses } from './requests';
+import { getProcesses, postProcesses, disableProcesses } from './requests';
 import MaterialTable from 'material-table';
 import { Button, Box, Snackbar, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
@@ -110,6 +110,9 @@ const Process = () => {
                                     processes[processes.indexOf(oldData)] = newData;
                                     return { ...prevState, processes };
                                 });
+                                const active = !oldData.active;
+                                console.log(active);
+                                disableProcesses(oldData.id, active);
                             }
                             resolve();
                         })

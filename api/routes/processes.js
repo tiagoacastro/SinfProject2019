@@ -8,6 +8,18 @@ router.get('/', async function (req, res, next) {
     res.json({ processes: processes });
 });
 
+router.post('/disable', async function (req, res, next) {
+    const process_id = req.body.id_process;
+    try {
+        const processes = await updateProcess(process_id);
+        res.sendStatus(200);
+    }
+    catch (e) {
+        res.sendStatus(400);
+    }
+
+});
+
 async function getProcesses(companyID, tenant, organization) {
     const client = getClient();
     let processes = []
@@ -45,6 +57,11 @@ async function createProcess(name) {
     const client = getClient();
     const process_id = await client.query('INSERT INTO processes (name) VALUES ($1) RETURNING id', [name]);
     return process_id.rows[0].id;
+}
+
+function updateProcess(id_process, active) {
+    const client = getClient();
+    return client.query('UPDATE processes SET active=$1 WHERE id=$2', [active, id_process]);
 }
 
 async function createEvents(process_id, events) {
