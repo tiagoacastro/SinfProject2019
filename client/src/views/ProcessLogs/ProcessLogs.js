@@ -14,45 +14,31 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-//later on will be logsData
-const exampledata = [
-  { id: '48309832', timestamp: '03/01/1029', document: 'Sales Order', issuer: 'Company 1' },
-  { id: '48309833', timestamp: '03/01/1029', document: 'Delivery Order', issuer: 'Company 1' },
-  { id: '48309832', timestamp: '03/01/1029', document: 'Purchase Order', issuer: 'Company 2' },
-];
-
 const ProcessLogs = props => {
   const classes = useStyles();
 
-  const [logsData, setLogsData] = useState();
+  const [logsData, setLogsData] = useState([]);
 
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     getLogs()
       .then((response) => {
-        setLogsData(response.data.processes);
+        setLogsData(response.data.logs);
+        console.log(logsData)
       })
       .catch((err) => {
       });
   }, []);
 
   return (
-
     <div className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant='h6'>Process1Name</Typography>
           <Box my={3}>
-            <LogsTable data={exampledata} />
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant='h6'>Process2Name</Typography>
-          <Box my={3}>
-            <LogsTable data={exampledata} />
+            <LogsTable data={logsData} />
           </Box>
         </Grid>
       </Grid>
-    </div>
+    </div >
   );
 };
 
