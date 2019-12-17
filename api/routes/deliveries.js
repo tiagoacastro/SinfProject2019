@@ -12,7 +12,15 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
 
             if (res2.rows.length != 0) {
 
-                let result = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders/${res2.rows[0].reference_2}`, buyerCompany.id);
+                let id;
+
+                if (buyerCompany.id == 1) {
+                    id = res.rows[0].reference_1;
+                } else {
+                    id = res.rows[0].reference_2;
+                }
+
+                let result = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders/${id}`, buyerCompany.id);
 
                 let orderBody = [];
                 for (var j = 0; j < orders[i].documentLines.length; j++) {
