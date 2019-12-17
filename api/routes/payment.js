@@ -29,7 +29,7 @@ async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
                     if (salesInvoiceId.rows.length == 0) {
                         return console.error("No sales invoice was found with the purchase invoice")
                     } else
-                        return console.error(deliveryOrderId + ' - Error with order check')
+                        return console.error(paymentId + ' - Error with order check')
                 }
             }
             if (orderBodyArr.length != 0) {
