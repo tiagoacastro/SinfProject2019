@@ -60,34 +60,6 @@ app.use(function(err, req, res, next) {
 //---------functions---------
 //---------------------------
 
-async function testDB() {
-    const client = await connect();
-
-    //example query insert
-    await client.query('INSERT INTO processes (name) VALUES ($1)', ['test'], (error, result) => {
-        if (error) {
-            return console.error('Error executing INSERT query', error.stack)
-        }
-        console.log('added')
-    });
-
-    //example query select
-    await client.query('SELECT id, name FROM processes', (error, result) => {
-        if (error) {
-            return console.error('Error executing SELECT query', error.stack)
-        }
-        console.log(result.rows)
-    });
-
-    //example query delete
-    await client.query('DELETE FROM processes', (error, result) => {
-        if (error) {
-            return console.error('Error executing DELETE query', error.stack)
-        }
-        console.log('deleted')
-    });
-}
-
 var companies;
 
 async function initialize() {
@@ -101,13 +73,11 @@ async function initialize() {
 
 //---------------------------
 //------------code-----------
-//---------------------------
-
-//testDB();
+//-------------------------
 
 initialize().then(
-    async() => {
-        const client = await connect();
+    async () => {
+        const client = getClient();
         let result = await client.query('SELECT * FROM processes where active = true');
 
         let events = [];
