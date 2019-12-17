@@ -80,8 +80,6 @@ async function postSalesInvoice(order, sellerCompany, buyerCompany) {
         if (rows.length == 1) {
             console.log('delivery order for invoice: ' + deliveryOrderId + ' - Already exists with id on company ' + sellerCompany.id + ' being: ' + rows[0].document_2);
 
-            log(sellerCompany.id, 'Sales Invoice', false, "Document already exists");
-
             //await postPurchasesInvoice(rows[0].document_2, order, sellerCompany, buyerCompany);
         } else {
             console.log('delivery order for invoice: ' + deliveryOrderId + ' - Error with order check')
@@ -187,8 +185,6 @@ async function postPurchasesInvoice(salesInvoice, order, sellerCompany, buyerCom
             }
 
             console.log('sales invoice: ' + salesInvoice + ' - Already exists with id on company ' + buyerCompany.id + ' being: ' + id);
-
-            log(buyerCompany.id, 'Products Invoice', false, "Document already exists");
         } else {
             console.log('sales invoice: ' + salesInvoice + ' - Error with invoice check')
 
@@ -293,8 +289,6 @@ async function postPurchasesInvoiceManual(salesInvoice, sellerCompany, buyerComp
             }
 
             console.log('sales invoice: ' + salesInvoice.id + ' - Already exists with id on company ' + buyerCompany.id + ' being: ' + id);
-
-            log(buyerCompany.id, 'Products Invoice', false, "Document already exists");
         } else {
             console.log('sales invoice: ' + salesInvoice.id + ' - Error with invoice check')
 
@@ -309,7 +303,7 @@ async function generatePurchasesInvoices(sellerCompany, buyerCompany) {
     var salesInvoicesArr = res.data;
     var activeInvoices2 = salesInvoicesArr.filter(invoice => !invoice.isDeleted);
     var activeInvoices = activeInvoices2.filter(invoice => invoice.documentStatus == 1 && invoice.documentStatus == 1);
-    activeInvoices.forEach(async function (element) {
+    activeInvoices.forEach(async function(element) {
         await postPurchasesInvoiceManual(element, sellerCompany, buyerCompany);
     });
 }
@@ -320,7 +314,7 @@ async function generateSalesInvoices(sellerCompany, buyerCompany) {
     var deliveryOrderArr = res.data;
     var activeDelivery2 = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
     var activeDelivery = activeDelivery2.filter(delivery => !delivery.autoCreated);
-    activeDelivery.forEach(async function (element) {
+    activeDelivery.forEach(async function(element) {
         await postSalesInvoice(element, sellerCompany, buyerCompany);
     });
 }

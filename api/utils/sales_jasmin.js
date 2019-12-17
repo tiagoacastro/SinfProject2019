@@ -104,8 +104,6 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
                 }
 
                 console.log('purchase order: ' + purchaseOrderId + ' - Already exists with id on company ' + sellerCompany.id + ' being: ' + id)
-
-                log(sellerCompany.id, 'Sales Order', false, "Document already exists");
             } else {
                 console.log('purchase order: ' + purchaseOrderId + ' - Error with order check')
 
