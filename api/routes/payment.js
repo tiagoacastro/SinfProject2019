@@ -50,7 +50,7 @@ async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
 
         } else {
             if (res.rows.length == 1) {
-                console.log(paymentId + ' - Already exists with id on company 1 being: ' + res.rows[0])
+                console.log('payment: ' + paymentId + ' - Already exists with id on company 1 being: ' + res.rows[0])
 
                 log(sellerCompany.id, 'Payment Receipt', false, "Document already exists");
             } else {
