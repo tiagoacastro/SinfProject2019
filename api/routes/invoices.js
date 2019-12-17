@@ -267,9 +267,9 @@ async function postPurchasesInvoiceManual(salesInvoice, sellerCompany, buyerComp
 
             if (buyerCompany.id == 1) {
                 reference_1 = invoiceId;
-                reference_2 = salesInvoice;
+                reference_2 = salesInvoice.id;
             } else {
-                reference_1 = salesInvoice;
+                reference_1 = salesInvoice.id;
                 reference_2 = invoiceId;
             }
 
@@ -303,4 +303,14 @@ async function postPurchasesInvoiceManual(salesInvoice, sellerCompany, buyerComp
     }
 }
 
-module.exports = { postSalesInvoice };
+async function getSalesInvoicesManual(sellerCompany, buyerCompany) {
+    let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices/`, sellerCompany.id);
+    var salesInvoicesArr = res.data;
+    var activeInvoices2 = salesInvoicesArr.filter(invoice => !invoice.isDeleted);
+    var activeInvoices = activeInvoices2.filter(invoice => invoice.documentStatus == 1 && invoice.documentStatus == 1);
+    activeInvoices.forEach(async function(element) {
+        await postPurchasesInvoiceManual(element, sellerCompany, buyerCompany);
+    });
+}
+
+module.exports = { postSalesInvoice, getSalesInvoicesManual };
