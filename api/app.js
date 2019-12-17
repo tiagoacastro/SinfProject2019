@@ -106,9 +106,37 @@ async function initialize() {
 
 initialize().then(
     async () => {
-        //await getPurchaseOrders(companies[0], companies[1]);
-        //await getDeliveryOrders(companies[0], companies[1]);
-        //await getPayments(companies[0], companies[1]);
+        const client = await connect();
+        let result = await client.query('SELECT * FROM processes where active = true');
+
+        let events = [];
+        for (var i = 0; i < result.rows.length; i++) {
+            let result2 = await client.query('SELECT events.* FROM processes_events, events WHERE processes_events.id_process = $1 and processes_events.id_event = events.id order by processes_events.position', [result.rows[i].id]);
+            events.push(result2.rows);
+        }
+
+        for (var j = 0; j < events.length; j++) {
+            for (var k = 0; k < events[j].length; k++) {
+                if (events[j][k].method == "Automatic") {
+                    switch (events[j][k].document) {
+                        case "Sales Order":
+                            await getPurchaseOrders(companies[events[j][k].issuing_company - 1], companies[2 - events[j][k].issuing_company]);
+                            break;
+                        case "Goods Receipt":
+                            await getDeliveryOrders(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            break;
+
+                        case "Payment Receipt":
+                            await getPayments(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            break;
+
+                        default:
+                            break;
+
+                    }
+                }
+            }
+        }
     })
 
 
