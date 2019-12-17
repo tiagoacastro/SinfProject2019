@@ -107,7 +107,7 @@ initialize().then(
                             break;
 
                         case "Sales Invoice":
-                            await generateSalesInvoices(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            await generateSalesInvoices(companies[events[j][k].issuing_company - 1], companies[2 - events[j][k].issuing_company]);
                             break;
 
                         default:
