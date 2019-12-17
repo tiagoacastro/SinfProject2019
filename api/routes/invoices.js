@@ -318,7 +318,7 @@ async function generateSalesInvoices(sellerCompany, buyerCompany) {
     var deliveryOrderArr = res.data;
     var activeDelivery2 = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
     var activeDelivery = activeDelivery2.filter(delivery => !delivery.autoCreated);
-    activeInvoices.forEach(async function(element) {
+    activeDelivery.forEach(async function(element) {
         await postSalesInvoice(element, sellerCompany, buyerCompany);
     });
 }
