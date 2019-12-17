@@ -1,6 +1,6 @@
 var { sendRequest } = require('./../utils/jasmin');
 const { pool } = require('../config');
-var { log } = require('../routes/logs');
+var { log } = require('../utils/requests');
 
 async function postSalesOrder(orders, sellerCompany, buyerCompany) {
     for (let i = 0; i < orders.length; i++) {
@@ -126,4 +126,4 @@ async function getPurchaseOrders(sellerCompany, buyerCompany) {
 }
 
 
-module.exports = {getPurchaseOrders};
+module.exports = { getPurchaseOrders };
