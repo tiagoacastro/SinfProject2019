@@ -24,7 +24,7 @@ async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
                         id = salesInvoiceId.rows[0].reference_2;
                     }
 
-                    
+
                     let salesInvoice = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices/${id}`, sellerCompany.id);
                     orderBodyArr.push({
                         sourceDoc: salesInvoice.data.naturalKey,
@@ -59,8 +59,6 @@ async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
         } else {
             if (res.rows.length == 1) {
                 console.log('payment: ' + paymentId + ' - Already exists with id on company 1 being: ' + res.rows[0])
-
-                log(sellerCompany.id, 'Payment Receipt', false, "Document already exists");
             } else {
                 console.log(paymentId + ' - Error with order check');
 
