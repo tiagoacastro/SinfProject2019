@@ -76,6 +76,11 @@ async function initialize() {
 //---------------------------
 //------------code-----------
 //-------------------------
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
 
 initialize().then(
     async () => {
@@ -88,28 +93,29 @@ initialize().then(
             events.push(result2.rows);
         }
 
-        for (var j = 0; j < events.length; j++) {
-            for (var k = 0; k < events[j].length; k++) {
-                if (events[j][k].method == "Automatic") {
-                    switch (events[j][k].document) {
+        await asyncForEach(events, async (event) => {
+            console.log("halo");
+            await asyncForEach(event, async (e) => {
+                if (e.method == "Automatic") {
+                    switch (e.document) {
                         case "Sales Order":
-                            await generateSalesOrder(companies[events[j][k].issuing_company - 1], companies[2 - events[j][k].issuing_company]);
+                            await generateSalesOrder(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
                             break;
 
                         case "Goods Receipt":
-                            await generateGoodsReceipt(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            await generateGoodsReceipt(companies[2 - e.issuing_company], companies[e.issuing_company - 1]);
                             break;
 
                         case "Payment Receipt":
-                            await generatePaymentReceipt(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            await generatePaymentReceipt(companies[2 - e.issuing_company], companies[e.issuing_company - 1]);
                             break;
 
                         case "Purchase Invoice":
-                            await generatePurchasesInvoices(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            await generatePurchasesInvoices(companies[2 - e.issuing_company], companies[e.issuing_company - 1]);
                             break;
 
                         case "Sales Invoice":
-                            await generateSalesInvoices(companies[events[j][k].issuing_company - 1], companies[2 - events[j][k].issuing_company]);
+                            await generateSalesInvoices(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
                             break;
 
                         default:
@@ -117,8 +123,8 @@ initialize().then(
 
                     }
                 }
-            }
-        }
+            })
+        })
     })
 
 

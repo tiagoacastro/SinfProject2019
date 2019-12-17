@@ -304,21 +304,23 @@ async function postPurchasesInvoiceManual(salesInvoice, sellerCompany, buyerComp
 }
 
 async function generatePurchasesInvoices(sellerCompany, buyerCompany) {
+    console.log("generatePurchasesInvoices");
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices/`, sellerCompany.id);
     var salesInvoicesArr = res.data;
     var activeInvoices2 = salesInvoicesArr.filter(invoice => !invoice.isDeleted);
     var activeInvoices = activeInvoices2.filter(invoice => invoice.documentStatus == 1 && invoice.documentStatus == 1);
-    activeInvoices.forEach(async function(element) {
+    activeInvoices.forEach(async function (element) {
         await postPurchasesInvoiceManual(element, sellerCompany, buyerCompany);
     });
 }
 
 async function generateSalesInvoices(sellerCompany, buyerCompany) {
+    console.log("generateSalesInvoices");
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/shipping/deliveries`, sellerCompany.id);
     var deliveryOrderArr = res.data;
     var activeDelivery2 = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
     var activeDelivery = activeDelivery2.filter(delivery => !delivery.autoCreated);
-    activeDelivery.forEach(async function(element) {
+    activeDelivery.forEach(async function (element) {
         await postSalesInvoice(element, sellerCompany, buyerCompany);
     });
 }
