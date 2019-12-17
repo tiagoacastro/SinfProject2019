@@ -23,6 +23,8 @@ const AddProcessDialog = props => {
         'Payment Receipt': 'Payment Receipt'
     }
 
+    console.log(documents);
+
     const methods = {
         'Manual': 'Manual',
         'Automatic': 'Automatic',
@@ -95,35 +97,29 @@ const AddProcessDialog = props => {
                                 editable={{
                                     onRowAdd: newData =>
                                         new Promise((resolve, reject) => {
-                                            setTimeout(() => {
-                                                {
-                                                    let data = state.currentFields;
-                                                    newData.position = state.currentFields.length + 1;
-                                                    if (newData.issuing_company && newData.document && newData.method) {
-                                                        data.push(newData);
-                                                        setState({ ...state, currentFields: data });
-                                                    }
-                                                }
-                                                resolve()
-                                            }, 1000)
+                                            let data = state.currentFields;
+                                            newData.position = state.currentFields.length + 1;
+                                            if (newData.issuing_company && newData.document && newData.method) {
+                                                data.push(newData);
+                                                setState({ ...state, currentFields: data });
+                                            }
+
+                                            resolve()
                                         }),
                                     onRowDelete: oldData =>
                                         new Promise((resolve, reject) => {
-                                            setTimeout(() => {
-                                                {
-                                                    let data = state.currentFields;
-                                                    const index = data.indexOf(oldData);
+                                            let data = state.currentFields;
+                                            const index = data.indexOf(oldData);
 
-                                                    for (let i = index + 1; i < state.currentFields.length; i++) {
-                                                        const oldStep = data[i].position;
-                                                        data[i].position = oldStep - 1;
-                                                    }
+                                            for (let i = index + 1; i < state.currentFields.length; i++) {
+                                                const oldStep = data[i].position;
+                                                data[i].position = oldStep - 1;
+                                            }
 
-                                                    data.splice(index, 1);
-                                                    setState({ ...state, currentFields: data });
-                                                }
-                                                resolve()
-                                            }, 1000)
+                                            data.splice(index, 1);
+                                            setState({ ...state, currentFields: data });
+
+                                            resolve()
                                         }),
                                 }}
                             />

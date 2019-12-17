@@ -48,30 +48,27 @@ const Products = () => {
                 editable={{
                     onRowDelete: oldData =>
                         new Promise((resolve, reject) => {
-                            setTimeout(() => {
-                                {
-                                    deleteMappedProducts(oldData.id)
-                                        .then(() => {
-                                            getMappedProducts()
-                                                .then((response) => {
-                                                    const data = response.data.mappedProducts;
-                                                    setState({ ...state, mappedProducts: data, addDialogOpen: false });
-                                                })
-                                                .catch((err) => { });
-                                        }).catch((err) => { });
-                                }
-                                resolve()
-                            }, 1000)
+                            deleteMappedProducts(oldData.id)
+                                .then(() => {
+                                    getMappedProducts()
+                                        .then((response) => {
+                                            const data = response.data.mappedProducts;
+                                            setState({ ...state, mappedProducts: data, addDialogOpen: false });
+                                        })
+                                        .catch((err) => { });
+                                }).catch((err) => { });
+
+                            resolve()
                         }),
                 }}
             />
             <ProductMapDialog open={state.addDialogOpen} close={handleAddClose} submit={() => {
                 getMappedProducts()
-                .then((response) => {
-                    const data = response.data.mappedProducts;
-                    setState({ ...state, mappedProducts: data });
-                })
-                .catch((err) => { });
+                    .then((response) => {
+                        const data = response.data.mappedProducts;
+                        setState({ ...state, mappedProducts: data });
+                    })
+                    .catch((err) => { });
             }} />
 
         </div >

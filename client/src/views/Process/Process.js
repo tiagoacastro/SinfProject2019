@@ -58,16 +58,16 @@ const Process = () => {
 
     const columns = [
         {
-            title: 'ID', field: 'id',
+            title: 'ID', field: 'id', editable: 'never',
             render: (row) => {
                 return <Button variant="outlined"
                     onClick={() => handleDialogOpen(row)}
                 > {row.id}</Button >
             }
         },
-        { title: 'Name', field: 'name' },
+        { title: 'Name', field: 'name', editable: 'never' },
         { title: 'Active', field: 'active', type: 'boolean' },
-        { title: 'N Steps', field: 'steps' },
+        { title: 'N Steps', field: 'steps', editable: 'never' },
     ];
 
 
@@ -100,6 +100,19 @@ const Process = () => {
                 data={state.processes}
                 options={{
                     toolbar: false
+                }}
+                editable={{
+                    onRowUpdate: (newData, oldData) =>
+                        new Promise(resolve => {
+                            if (oldData) {
+                                setState(prevState => {
+                                    const processes = [...prevState.processes];
+                                    processes[processes.indexOf(oldData)] = newData;
+                                    return { ...prevState, processes };
+                                });
+                            }
+                            resolve();
+                        })
                 }}
             />
             <DetailsProcessDialog open={state.detailsDialogOpen} close={handleDetailsDialogClose} data={state.selectedData} />

@@ -48,21 +48,16 @@ const CompanySettings = props => {
       className={clsx(classes.root, className)}
     >
       <CardHeader
-        action={
-          <IconButton size="small">
-            <EditIcon />
-          </IconButton>
-        }
-        title="Company Name"
+        title={companyInfo.name}
       />
       <Divider />
 
       <CardContent>
-        <Box fontWeight="fontWeightRegular" m={1}><Typography>Company Name: {companyInfo.name}</Typography></Box>
-        <Box fontWeight="fontWeightRegular" m={1}><Typography>Client ID: {companyInfo.client_id}</Typography></Box>
-        <Box fontWeight="fontWeightRegular" m={1}><Typography>Client Secret: {companyInfo.secret_id}</Typography></Box>
-        <Box fontWeight="fontWeightRegular" m={1}><Typography>Tenant: {companyInfo.tenant}</Typography></Box>
-        <Box fontWeight="fontWeightRegular" m={1}><Typography>Organization: {companyInfo.organization}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography><b>Company Name:</b> {companyInfo.name}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography><b>Client ID:</b> {companyInfo.client_id}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography><b>Client Secret:</b> {companyInfo.secret_id}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography><b>Tenant:</b> {companyInfo.tenant}</Typography></Box>
+        <Box fontWeight="fontWeightRegular" m={1}><Typography><b>Organization:</b> {companyInfo.organization}</Typography></Box>
       </CardContent>
     </Card >
   );
