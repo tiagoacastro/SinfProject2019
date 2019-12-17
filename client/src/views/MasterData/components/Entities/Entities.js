@@ -112,20 +112,17 @@ const Entities = () => {
                 editable={{
                     onRowDelete: oldData =>
                         new Promise((resolve, reject) => {
-                            setTimeout(() => {
-                                {
-                                    const data = entitiesData;
-                                    const index = data.indexOf(oldData);
-                                    data.splice(index, 1);
-                                    data.push({ category: oldData.category })
-                                    setEntitiesData(data);
+                            const data = entitiesData;
+                            const index = data.indexOf(oldData);
+                            data.splice(index, 1);
+                            data.push({ category: oldData.category })
+                            setEntitiesData(data);
 
-                                    deleteMappedEntities(oldData.id)
-                                        .then((response) => { })
-                                        .catch((err) => { });
-                                }
-                                resolve()
-                            }, 1000)
+                            deleteMappedEntities(oldData.id)
+                                .then((response) => { })
+                                .catch((err) => { });
+
+                            resolve()
                         }),
                 }}
             />
