@@ -43,12 +43,12 @@ app.use('/company/:companyID/sales', salesRouter);
 app.use('/company/:companyID/purchases', purchasesRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -82,50 +82,62 @@ async function asyncForEach(array, callback) {
     }
 }
 
-initialize().then(
-    async() => {
-        const client = getClient();
-        let result = await client.query('SELECT * FROM processes where active = true');
 
-        let events = [];
-        for (var i = 0; i < result.rows.length; i++) {
-            let result2 = await client.query('SELECT events.* FROM processes_events, events WHERE processes_events.id_process = $1 and processes_events.id_event = events.id order by processes_events.position', [result.rows[i].id]);
-            events.push(result2.rows);
-        }
 
-        await asyncForEach(events, async(event) => {
-            console.log("halo");
-            await asyncForEach(event, async(e) => {
-                if (e.method == "Automatic") {
-                    switch (e.document) {
-                        case "Sales Order":
-                            await generateSalesOrder(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
-                            break;
+const loopBody = async () => {
 
-                        case "Goods Receipt":
-                            await generateGoodsReceipt(companies[2 - e.issuing_company], companies[e.issuing_company - 1]);
-                            break;
+    const client = getClient();
+    let result = await client.query('SELECT * FROM processes where active = true');
 
-                        case "Payment Receipt":
-                            await generatePaymentReceipt(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
-                            break;
+    let events = [];
+    for (var i = 0; i < result.rows.length; i++) {
+        let result2 = await client.query('SELECT events.* FROM processes_events, events WHERE processes_events.id_process = $1 and processes_events.id_event = events.id order by processes_events.position', [result.rows[i].id]);
+        events.push(result2.rows);
+    }
 
-                        case "Purchase Invoice":
-                            await generatePurchasesInvoices(companies[2 - e.issuing_company], companies[e.issuing_company - 1]);
-                            break;
+    await asyncForEach(events, async (event) => {
+        await asyncForEach(event, async (e) => {
+            if (e.method == "Automatic") {
+                switch (e.document) {
+                    case "Sales Order":
+                        await generateSalesOrder(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
+                        break;
 
-                        case "Sales Invoice":
-                            await generateSalesInvoices(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
-                            break;
+                    case "Goods Receipt":
+                        await generateGoodsReceipt(companies[2 - e.issuing_company], companies[e.issuing_company - 1]);
+                        break;
 
-                        default:
-                            break;
+                    case "Payment Receipt":
+                        await generatePaymentReceipt(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
+                        break;
 
-                    }
+                    case "Purchase Invoice":
+                        await generatePurchasesInvoices(companies[2 - e.issuing_company], companies[e.issuing_company - 1]);
+                        break;
+
+                    case "Sales Invoice":
+                        await generateSalesInvoices(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
+                        break;
+
+                    default:
+                        break;
+
                 }
-            })
+            }
         })
     })
+}
 
+const loop = async () => {
+    while (true) {
+        loopBody();
+        await new Promise(resolve => setTimeout(() => resolve(console.log("Looping again")), 15000));
+    }
+}
+
+
+initialize().then(() => {
+    loop();
+});
 
 module.exports = app;
