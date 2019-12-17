@@ -130,7 +130,7 @@ const loopBody = async() => {
 
 const loop = async() => {
     while (true) {
-        loopBody();
+        await loopBody();
         await new Promise(resolve => setTimeout(() => resolve(console.log("Looping again")), 25000));
     }
 }
