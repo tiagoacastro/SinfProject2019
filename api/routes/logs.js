@@ -1,12 +1,17 @@
-var { sendRequest } = require('./../utils/jasmin');
-const { pool } = require('../config')
+var express = require('express');
+var router = express.Router();
+var { getClient } = require('../config');
 
-async function log(company, document, success, message) {
-    var currentdate = new Date();
-    var timestamp = currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate() + ' ' +
-        currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+router.get('/', async function (req, res, next) {
+    const logs = await getLogs();
+    console.log(logs.row)
+    res.send({ logs: logs.rows });
+});
 
-    await pool.query('INSERT INTO logs (moment, id_company, document, success, message) VALUES ($1, $2, $3, $4, $5)', [timestamp, company, document, success, message])
+async function getLogs() {
+    const client = getClient();
+    return client.query('SELECT logs.*, companies.name FROM logs INNER JOIN companies ON (logs.id_company = companies.id)');
 }
 
-module.exports = { log };
+
+module.exports = router;
