@@ -24,9 +24,8 @@ async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
                         id = salesInvoiceId.rows[0].reference_2;
                     }
 
-                    console.log(sellerCompany.id)
+                    
                     let salesInvoice = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices/${id}`, sellerCompany.id);
-
                     orderBodyArr.push({
                         sourceDoc: salesInvoice.data.naturalKey,
                         discount: orders[i].documentLines[j].discountAmount,
