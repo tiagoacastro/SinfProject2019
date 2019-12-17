@@ -15,9 +15,9 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
                 let id;
 
                 if (buyerCompany.id == 1) {
-                    id = res.rows[0].reference_1;
+                    id = res2.rows[0].reference_1;
                 } else {
-                    id = res.rows[0].reference_2;
+                    id = res2.rows[0].reference_2;
                 }
 
                 let result = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders/${id}`, buyerCompany.id);
