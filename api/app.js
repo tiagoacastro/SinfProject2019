@@ -106,7 +106,7 @@ async function initialize() {
 //testDB();
 
 initialize().then(
-    async () => {
+    async() => {
         const client = await connect();
         let result = await client.query('SELECT * FROM processes where active = true');
 
@@ -129,7 +129,8 @@ initialize().then(
 
                         case "Payment Receipt":
                             await getPayments(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
-                            
+                            break;
+
                         case "Purchase Invoice":
                             //await getSalesInvoicesManual(companies[0], companies[1]);
                             break;
