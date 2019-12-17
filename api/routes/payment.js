@@ -16,8 +16,16 @@ async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
                 let salesInvoiceId = await pool.query('SELECT reference_' + sellerCompany.id + ' FROM master_data WHERE master_data.reference_' + buyerCompany.id + ' = $1', [orders[i].documentLines[j].sourceDocId]);
 
                 if (salesInvoiceId.rows.length != 0) {
-                    let salesInvoice = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices/${salesInvoiceId.rows[0].reference_1}`, sellerCompany.id);
+                    let id;
 
+                    if (sellerCompany.id == 1) {
+                        id = salesInvoiceId.rows[0].reference_1;
+                    } else {
+                        id = salesInvoiceId.rows[0].reference_2;
+                    }
+
+                    
+                    let salesInvoice = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices/${id}`, sellerCompany.id);
                     orderBodyArr.push({
                         sourceDoc: salesInvoice.data.naturalKey,
                         discount: orders[i].documentLines[j].discountAmount,
