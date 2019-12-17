@@ -3,7 +3,7 @@ var { sendRequest } = require('./../utils/jasmin');
 const { pool } = require('../config');
 const { getCompanyInformation, getMappedProducts, getMappedEntities } = require('../utils/requests')
 const { getNotMappedProducts, getNotMappedEntities } = require('../utils/utils')
-var { log } = require('./logs');
+var { log } = require('../utils/requests');
 
 var router = express.Router({ mergeParams: true });
 

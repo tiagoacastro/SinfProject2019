@@ -1,7 +1,7 @@
 var express = require('express');
 var { sendRequest } = require('./../utils/jasmin');
 const { pool } = require('../config');
-var { log } = require('./logs');
+var { log } = require('../utils/requests');
 
 async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
     for (let i = 0; i < orders.length; i++) {

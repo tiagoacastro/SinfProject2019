@@ -1,6 +1,6 @@
 var { sendRequest } = require('./../utils/jasmin');
 const { pool } = require('../config');
-var { log } = require('./logs');
+var { log } = require('../utils/requests');
 
 async function postSalesInvoice(order, sellerCompany, buyerCompany) {
     let deliveryOrderId = order.id;

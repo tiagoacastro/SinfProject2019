@@ -1,6 +1,6 @@
 var { postSalesInvoice } = require('./invoices');
 var { sendRequest } = require('./../utils/jasmin');
-var { log } = require('./logs');
+var { log } = require('../utils/requests');
 const { pool } = require('../config');
 
 async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
