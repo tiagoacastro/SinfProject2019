@@ -19,6 +19,7 @@ var { getPurchaseOrders } = require('./routes/sales');
 var { getDeliveryOrders } = require('./routes/deliveries');
 var { getPayments } = require('./routes/payment');
 var { log } = require('./routes/logs');
+var { getSalesInvoicesManual } = require('./routes/invoices');
 var app = express();
 
 // view engine setup
@@ -40,12 +41,12 @@ app.use('/company/:companyID/purchases', purchasesRouter);
 app.use('/processes', processesRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -105,9 +106,10 @@ async function initialize() {
 //testDB();
 
 initialize().then(
-    async () => {
+    async() => {
         //await getPurchaseOrders(companies[0], companies[1]);
         //await getDeliveryOrders(companies[0], companies[1]);
+        //await getSalesInvoicesManual(companies[0], companies[1]);
         //await getPayments(companies[0], companies[1]);
     })
 
