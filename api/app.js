@@ -43,12 +43,12 @@ app.use('/company/:companyID/sales', salesRouter);
 app.use('/company/:companyID/purchases', purchasesRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -83,7 +83,7 @@ async function asyncForEach(array, callback) {
 }
 
 initialize().then(
-    async () => {
+    async() => {
         const client = getClient();
         let result = await client.query('SELECT * FROM processes where active = true');
 
@@ -93,9 +93,9 @@ initialize().then(
             events.push(result2.rows);
         }
 
-        await asyncForEach(events, async (event) => {
+        await asyncForEach(events, async(event) => {
             console.log("halo");
-            await asyncForEach(event, async (e) => {
+            await asyncForEach(event, async(e) => {
                 if (e.method == "Automatic") {
                     switch (e.document) {
                         case "Sales Order":
@@ -107,7 +107,7 @@ initialize().then(
                             break;
 
                         case "Payment Receipt":
-                            await generatePaymentReceipt(companies[2 - e.issuing_company], companies[e.issuing_company - 1]);
+                            await generatePaymentReceipt(companies[e.issuing_company - 1], companies[2 - e.issuing_company]);
                             break;
 
                         case "Purchase Invoice":
