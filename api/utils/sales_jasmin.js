@@ -117,7 +117,7 @@ async function postSalesOrder(orders, sellerCompany, buyerCompany) {
     }
 }
 
-async function getPurchaseOrders(sellerCompany, buyerCompany) {
+async function generateSalesOrder(sellerCompany, buyerCompany) {
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/purchases/orders`, buyerCompany.id);
     var purchaseOrderArr = res.data;
     var activeOrder = purchaseOrderArr.filter(order => !order.isDeleted);
@@ -126,4 +126,4 @@ async function getPurchaseOrders(sellerCompany, buyerCompany) {
 }
 
 
-module.exports = { getPurchaseOrders };
+module.exports = { generateSalesOrder };

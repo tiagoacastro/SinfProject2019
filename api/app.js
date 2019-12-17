@@ -16,11 +16,11 @@ var processesRouter = require("./routes/processes");
 var logsRouter = require("./routes/logs");
 var { getAcessToken } = require('./utils/jasmin');
 var { sendRequest } = require('./utils/jasmin');
-var { getPurchaseOrders } = require('./utils/sales_jasmin');
-var { getDeliveryOrders } = require('./routes/deliveries');
-var { getPayments } = require('./routes/payment');
+var { generateSalesOrder } = require('./utils/sales_jasmin');
+var { generateGoodsReceipt } = require('./routes/deliveries');
+var { generatePaymentReceipt } = require('./routes/payment');
 var { log } = require('./routes/logs');
-var { getSalesInvoicesManual } = require('./routes/invoices');
+var { generateSalesInvoices, generatePurchasesInvoices } = require('./routes/invoices');
 var app = express();
 
 // view engine setup
@@ -93,18 +93,23 @@ initialize().then(
                 if (events[j][k].method == "Automatic") {
                     switch (events[j][k].document) {
                         case "Sales Order":
-                            await getPurchaseOrders(companies[events[j][k].issuing_company - 1], companies[2 - events[j][k].issuing_company]);
+                            await generateSalesOrder(companies[events[j][k].issuing_company - 1], companies[2 - events[j][k].issuing_company]);
                             break;
+
                         case "Goods Receipt":
-                            await getDeliveryOrders(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            await generateGoodsReceipt(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
                             break;
 
                         case "Payment Receipt":
-                            await getPayments(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            await generatePaymentReceipt(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
                             break;
 
                         case "Purchase Invoice":
-                            await getSalesInvoicesManual(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            await generatePurchasesInvoices(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
+                            break;
+
+                        case "Sales Invoice":
+                            await generateSalesInvoices(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
                             break;
 
                         default:

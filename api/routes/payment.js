@@ -62,11 +62,11 @@ async function postPaymentsReceipts(orders, sellerCompany, buyerCompany) {
     }
 }
 
-async function getPayments(sellerCompany, buyerCompany) {
+async function generatePaymentReceipt(sellerCompany, buyerCompany) {
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${buyerCompany.tenant}/${buyerCompany.organization}/accountsPayable/payments`, buyerCompany.id);
     var paymentOrderArr = res.data;
     var activePayment = paymentOrderArr.filter(payment => !payment.isDeleted);
     postPaymentsReceipts(activePayment, sellerCompany, buyerCompany);
 }
 
-module.exports = { getPayments };
+module.exports = { generatePaymentReceipt };

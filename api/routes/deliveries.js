@@ -1,4 +1,3 @@
-var { postSalesInvoice } = require('./invoices');
 var { sendRequest } = require('./../utils/jasmin');
 var { log } = require('../utils/requests');
 const { pool } = require('../config');
@@ -33,8 +32,6 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
                     console.log('delivery order: ' + deliveryOrderId + ' - Doesnt exist, goods receipt was created on company ' + buyerCompany.id + ' with id: ' + goodsReceiptId)
 
                     log(buyerCompany.id, 'Goods Receipt', true, "id: " + goodsReceiptId);
-
-                    await postSalesInvoice(orders[i], sellerCompany, buyerCompany);
                 } catch (err) {
                     console.log(err);
 
@@ -64,8 +61,6 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
                 console.log('delivery order: ' + deliveryOrderId + ' - Already exists with id on company ' + buyerCompany.id + ' being: ' + id)
 
                 log(buyerCompany.id, 'Goods Receipt', false, "Document already exists");
-
-                await postSalesInvoice(orders[i], sellerCompany, buyerCompany);
             } else {
                 console.log('delivery order: ' + deliveryOrderId + ' - Error with order check')
 
@@ -75,12 +70,12 @@ async function postGoodsReceipt(orders, sellerCompany, buyerCompany) {
     }
 }
 
-async function getDeliveryOrders(sellerCompany, buyerCompany) {
+async function generateGoodsReceipt(sellerCompany, buyerCompany) {
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/shipping/deliveries`, sellerCompany.id);
-    var deliveryOrderArr = res.data; 
+    var deliveryOrderArr = res.data;
     var activeDelivery2 = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
     var activeDelivery = activeDelivery2.filter(delivery => !delivery.autoCreated);
     await postGoodsReceipt(activeDelivery, sellerCompany, buyerCompany);
 }
 
-module.exports = { getDeliveryOrders };
+module.exports = { generateGoodsReceipt };

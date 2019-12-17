@@ -303,7 +303,7 @@ async function postPurchasesInvoiceManual(salesInvoice, sellerCompany, buyerComp
     }
 }
 
-async function getSalesInvoicesManual(sellerCompany, buyerCompany) {
+async function generatePurchasesInvoices(sellerCompany, buyerCompany) {
     let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/billing/invoices/`, sellerCompany.id);
     var salesInvoicesArr = res.data;
     var activeInvoices2 = salesInvoicesArr.filter(invoice => !invoice.isDeleted);
@@ -313,4 +313,14 @@ async function getSalesInvoicesManual(sellerCompany, buyerCompany) {
     });
 }
 
-module.exports = { postSalesInvoice, getSalesInvoicesManual };
+async function generateSalesInvoices(sellerCompany, buyerCompany) {
+    let res = await sendRequest('get', `https://my.jasminsoftware.com/api/${sellerCompany.tenant}/${sellerCompany.organization}/shipping/deliveries`, sellerCompany.id);
+    var deliveryOrderArr = res.data;
+    var activeDelivery2 = deliveryOrderArr.filter(delivery => !delivery.isDeleted);
+    var activeDelivery = activeDelivery2.filter(delivery => !delivery.autoCreated);
+    activeInvoices.forEach(async function(element) {
+        await postSalesInvoice(element, sellerCompany, buyerCompany);
+    });
+}
+
+module.exports = { generateSalesInvoices, generatePurchasesInvoices };
