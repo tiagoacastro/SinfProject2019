@@ -132,7 +132,7 @@ initialize().then(
                             break;
 
                         case "Purchase Invoice":
-                            //await getSalesInvoicesManual(companies[0], companies[1]);
+                            await getSalesInvoicesManual(companies[2 - events[j][k].issuing_company], companies[events[j][k].issuing_company - 1]);
                             break;
 
                         default:
