@@ -70,7 +70,7 @@ async function postSalesInvoice(order, sellerCompany, buyerCompany) {
 
             log(sellerCompany.id, 'Sales Invoice', true, "id: " + invoiceId);
 
-            await postPurchasesInvoice(invoiceId, order, sellerCompany, buyerCompany);
+            //await postPurchasesInvoice(invoiceId, order, sellerCompany, buyerCompany);
         } catch (err) {
             log(sellerCompany.id, 'Sales Invoice', false, "Error");
 
@@ -82,7 +82,7 @@ async function postSalesInvoice(order, sellerCompany, buyerCompany) {
 
             log(sellerCompany.id, 'Sales Invoice', false, "Document already exists");
 
-            await postPurchasesInvoice(rows[0].document_2, order, sellerCompany, buyerCompany);
+            //await postPurchasesInvoice(rows[0].document_2, order, sellerCompany, buyerCompany);
         } else {
             console.log('delivery order for invoice: ' + deliveryOrderId + ' - Error with order check')
 
